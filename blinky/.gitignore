@@ -1,0 +1,13 @@
+/project
+/target
+/obj_dir
+/out
+/test_run_dir
+/.metals
+/*.fir
+/*.vcd
+/*.bit
+/*.svf
+/*.config
+/*.json
+/*.v
