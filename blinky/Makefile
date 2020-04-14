@@ -29,18 +29,18 @@ VERILATOR      = $(DOCKER) $(VERILATORARGS) verilator/verilator
 #VERILATOR = verilator
 
 scala_files = $(wildcard src/main/scala/*scala)
-
-verilog_files = Blinky.v
+generated_files = generated
+verilog_files = $(generated_files)/*.v
 
 tests = $(sort $(patsubst tests/%.out,%,$(wildcard tests/*.out)))
 
 # Targets
 
 $(verilog_files): $(scala_files)
-	scripts/mill $(project).run
+	scripts/mill $(project).run -td $(generated_files)
 
 scala_tests: $(project)
-	scripts/mill $(project).test
+	scripts/mill $(project).test -td $(generated_files)
 
 check: scala_tests $(tests)
 
@@ -52,8 +52,8 @@ synth: check-board-vars $(project).bit ## Synthesizes for target BOARD with "mak
 check-board-vars:
 	@test -n "$(LPF)" || (echo "If synthesizing or programming, use \"synth\" or \"prog\" targets with BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
 
-$(project).json: $(verilog_files) verilog/toplevel.v
-	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $@ -top toplevel"
+$(project).json: $(verilog_files)
+	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $@ -top BlinkyTop"
 
 $(project).config: $(project).json $(LPF)
 	$(NEXTPNR) --json $< --lpf $(LPF) --textcfg $@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
@@ -74,6 +74,7 @@ clean: ## Clean all generated files
 	@./scripts/mill clean
 	@rm -f $(project).fir $(project).anno.json $(project).v
 	@rm -rf obj_dir test_run_dir target project
+	@rm -rf $(generated_files)
 	@rm -f $(project)
 	@rm -rf *.bit *.json *.svf *.config out
 

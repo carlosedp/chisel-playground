@@ -3,7 +3,9 @@
 /obj_dir
 /out
 /test_run_dir
+/generated
 /.metals
+/.bloop
 /*.fir
 /*.vcd
 /*.bit
