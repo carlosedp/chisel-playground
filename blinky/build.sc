@@ -27,7 +27,7 @@ trait HasChiselTests extends CrossSbtModule {
   object test extends Tests {
     override def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.5",
-      ivy"edu.berkeley.cs::chisel-iotesters:1.2+",
+      ivy"edu.berkeley.cs::chisel-iotesters:1.3+",
       ivy"edu.berkeley.cs::chiseltest:0.2-SNAPSHOT"
     )
     def repositories = super.repositories ++ Seq(
@@ -39,7 +39,7 @@ trait HasChiselTests extends CrossSbtModule {
 
 trait HasMacroParadise extends ScalaModule {
   // Enable macro paradise for @chiselName et al
-  val macroPlugins = Agg(ivy"org.scalamacros:::paradise:2.1.0")
+  val macroPlugins = Agg(ivy"org.scalamacros:::paradise:2.1.1")
   def scalacPluginIvyDeps = macroPlugins
   def compileIvyDeps = macroPlugins
 }
@@ -51,6 +51,6 @@ object blinky
     with HasXsource211
     with HasMacroParadise {
   override def millSourcePath = super.millSourcePath
-  def crossScalaVersion = "2.12.10"
+  def crossScalaVersion = "2.12.11"
   def mainClass = Some("Blinky")
 }
