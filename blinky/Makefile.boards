@@ -1,3 +1,5 @@
+// code: language=makefile tabSize=4
+
 ifeq ($(BOARD),evn)
 	## ECP5-EVN
 	FPGA=ecp5

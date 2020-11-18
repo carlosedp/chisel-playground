@@ -76,7 +76,7 @@ clean: ## Clean all generated files
 	@rm -rf obj_dir test_run_dir target project
 	@rm -rf $(generated_files)
 	@rm -f $(project)
-	@rm -rf *.bit *.json *.svf *.config out
+	@rm -rf *.bit *.json *.svf *.config out *.fir *.v
 
 help:
 	@echo "Makefile targets:"

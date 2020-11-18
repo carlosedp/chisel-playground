@@ -10,7 +10,7 @@ class Blinky(freq: Int) extends Module {
   })
   val CNT_MAX = (freq / 2 - 1).U;
 
-  val cntReg = RegInit(0.U(32.W))
+  val cntReg = RegInit(chiselTypeOf(CNT_MAX), init = 1.U)
   val blkReg = RegInit(1.U(1.W))
 
   cntReg := cntReg + 1.U

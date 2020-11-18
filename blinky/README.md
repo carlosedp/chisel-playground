@@ -35,6 +35,6 @@ make BOARD=ulx3s prog
 make BOARD=ulx3s USBDEVICE=/dev/tty.usbserial-120001 prog
 ```
 
-Programming using OpenOCD on Docker does not work on Docker Desktop for Mac/Winsows since the container is run in a Linux VM and can not see the physical devices connected to the Host.
+Programming using OpenOCD on Docker does not work on Docker Desktop for Mac/Windows since the container is run in a Linux VM and can not see the physical devices connected to the Host.
 
 For the ULX3S board, the current OpenOCD does not support ft232 protocol so to program it, download [ujprog](https://github.com/emard/ulx3s-bin/tree/master/usb-jtag) for your platform and program using `./ujprog chiselwatt.bit` or to persist in the flash, `./ujprog -j FLASH chiselwatt.bit`.
