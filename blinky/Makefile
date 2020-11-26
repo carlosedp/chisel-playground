@@ -6,6 +6,7 @@ SHELL = bash
 DOCKER=docker
 
 project = blinky
+toplayer = BlinkyTop
 
 PWD = $(shell pwd)
 USBDEVICE ?= /dev/bus/usb
@@ -53,13 +54,13 @@ check-board-vars:
 	@test -n "$(LPF)" || (echo "If synthesizing or programming, use \"synth\" or \"prog\" targets with BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
 
 $(project).json: $(verilog_files)
-	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $@ -top BlinkyTop"
+	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $(generated_files)/$@ -top $(toplayer)"
 
 $(project).config: $(project).json $(LPF)
-	$(NEXTPNR) --json $< --lpf $(LPF) --textcfg $@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
+	$(NEXTPNR) --json $(generated_files)/$< --lpf $(LPF) --textcfg $(generated_files)/$@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
 
 $(project).bit: $(project).config
-	$(PACK) --svf $(project).svf $< $@
+	$(PACK) --svf $(generated_files)/$(project).svf $(generated_files)/$< $(generated_files)/$@
 # if [ -"$(FPGA)" == "ecp5" ]; then \
 # elif [ "$(FPGA)" ==  "ice40" ]; then \
 # 	$(PACK) $< $@ \
@@ -68,15 +69,13 @@ $(project).bit: $(project).config
 $(project).svf: $(project).bit
 
 prog: check-board-vars $(project).svf ## Programs target BOARD with "make BOARD=board prog"
-	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $(project).svf; exit"
+	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $(generated_files)/$(project).svf; exit"
 
 clean: ## Clean all generated files
 	@./scripts/mill clean
-	@rm -f $(project).fir $(project).anno.json $(project).v
 	@rm -rf obj_dir test_run_dir target project
 	@rm -rf $(generated_files)
 	@rm -f $(project)
-	@rm -rf *.bit *.json *.svf *.config out *.fir *.v
 
 help:
 	@echo "Makefile targets:"

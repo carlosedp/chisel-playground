@@ -6,10 +6,3 @@
 /generated
 /.metals
 /.bloop
-/*.fir
-/*.vcd
-/*.bit
-/*.svf
-/*.config
-/*.json
-/*.v
