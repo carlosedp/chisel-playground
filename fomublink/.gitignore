@@ -1,0 +1,8 @@
+/.metals
+/.bloop
+/generated
+/out
+/*.anno.json
+/*.v
+/*.fir
+/*.f
