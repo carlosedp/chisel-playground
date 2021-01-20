@@ -1,43 +1,29 @@
 import chisel3._
+import chisel3.util._
 
 /**
   * The blinking LED component.
   */
 class Blinky(freq: Int) extends Module {
   val io = IO(new Bundle {
-    val led0 = Output(UInt(1.W))
-    val led1 = Output(UInt(1.W))
+    val led0 = Output(Bool())
+    val led1 = Output(Bool())
+    val led2 = Output(Bool())
   })
+
+  val blk = RegInit(1.U)
+  val (counterValue, counterWrap) = Counter(true.B, freq)
   val CNT_MAX = (freq / 2 - 1).U;
 
-  val cntReg = RegInit(chiselTypeOf(CNT_MAX), init = 1.U)
-  val blkReg = RegInit(1.U(1.W))
-
-  cntReg := cntReg + 1.U
-  when(cntReg === CNT_MAX) {
-    cntReg := 0.U
-    blkReg := ~blkReg
+  when(counterValue === CNT_MAX) {
+    blk := ~blk
   }
-  io.led0 := blkReg
-  io.led1 := ~blkReg
-}
+  io.led0 := blk
+  io.led1 := ~blk
+  io.led2 := blk
 
-// Blinking LED top layer
-class BlinkyTop extends Module {
-  val io = IO(new Bundle {
-    val led0 = Output(UInt(1.W))
-    val led1 = Output(UInt(1.W))
-  })
+  // io.led0 := counterValue(22)
+  // io.led1 := counterValue(23)
+  // io.led2 := counterValue(24)
 
-  val b = Module(new Blinky(25000000))
-
-  b.io <> io
-  b.reset <> ~reset.asBool()
-}
-
-/**
-  * An object extending App to generate the Verilog code.
-  */
-object Blinky extends App {
-  chisel3.Driver.execute(args, () => new BlinkyTop())
 }

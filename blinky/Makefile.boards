@@ -45,7 +45,7 @@ else ifeq ($(BOARD),colorlight)
 	OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
 	OPENOCD_DEVICE_CONFIG=openocd/LFE5U-25F.cfg
 else ifeq ($(BOARD),fomu)
-	## Fomu PVT1  -  Test
+	## Fomu PVT1 - Test
 	FPGA=ice40
 	PACK=$(ICEPACK)
 	LPF=constraints/fomu-pvt1.lpf
@@ -55,5 +55,16 @@ else ifeq ($(BOARD),fomu)
 	OPENOCD=$(OPENOCD_DEF)
 	OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
 	OPENOCD_DEVICE_CONFIG=openocd/LFE5U-25F.cfg
+else ifeq ($(BOARD),polarfireeval)
+	## Microsemi - Polarfire Evaluarion Kit (ES)
+	FPGA=mpf300ts_es
+	PACK=
+	LPF=constraints/polarfire_evaluation.pdc
+	PACKAGE=1152-I
+	# TODO - Define parameters below
+	NEXTPNR_FLAGS=
+	OPENOCD=
+	OPENOCD_JTAG_CONFIG=
+	OPENOCD_DEVICE_CONFIG=
 else
 endif

@@ -1,9 +1,10 @@
 set_io -port_name {clock} -pin_name E25 -io_std LVCMOS18 -fixed true
+set_io -port_name {reset} -pin_name K22 -io_std LVCMOS18 -fixed true
 
-set_io -port_name {reset}    -pin_name B27 -io_std LVCMOS18 -fixed true
-set_io -port_name {user_sw1} -pin_name C21 -io_std LVCMOS18 -fixed true
-set_io -port_name {user_sw2} -pin_name A25 -io_std LVCMOS18 -fixed true
-set_io -port_name {user_sw3} -pin_name B19 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_sw0}  -pin_name B27 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_sw1}  -pin_name C21 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_sw2}  -pin_name A25 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_sw3} -pin_name B19 -io_std LVCMOS18 -fixed true
 
 set_io -port_name {io_tx} -pin_name H18 -io_std LVCMOS18 -fixed true
 set_io -port_name {io_rx} -pin_name G17 -io_std LVCMOS18 -fixed true
@@ -16,3 +17,12 @@ set_io -port_name {io_led4} -pin_name C27 -io_std LVCMOS18 -fixed true
 set_io -port_name {io_led5} -pin_name F23 -io_std LVCMOS18 -fixed true
 set_io -port_name {io_led6} -pin_name H22 -io_std LVCMOS18 -fixed true
 set_io -port_name {io_led7} -pin_name H21 -io_std LVCMOS18 -fixed true
+
+set_io -port_name {io_dip1} -pin_name H23 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip2} -pin_name D21 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip3} -pin_name H24 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip4} -pin_name C22 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip5} -pin_name B21 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip6} -pin_name G20 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip7} -pin_name F24 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_dip8} -pin_name F25 -io_std LVCMOS18 -fixed true

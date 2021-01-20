@@ -6,7 +6,7 @@ SHELL = bash
 DOCKER=docker
 
 project = blinky
-toplayer = BlinkyTop
+toplayer = Toplayer
 
 PWD = $(shell pwd)
 USBDEVICE ?= /dev/bus/usb
@@ -37,21 +37,25 @@ tests = $(sort $(patsubst tests/%.out,%,$(wildcard tests/*.out)))
 
 # Targets
 
-$(verilog_files): $(scala_files)
-	scripts/mill $(project).run -td $(generated_files)
 
-scala_tests: $(project)
+chisel: $(verilog_files) check-board-vars ## Generates Verilog code from Chisel sources
+$(verilog_files): $(scala_files)
+	@rm -rf $(generated_files)
+	BOARD=${BOARD} scripts/mill $(project).run -td $(generated_files)
+
+
+chisel_tests: $(project) ## Run Chisel tests
 	scripts/mill $(project).test -td $(generated_files)
 
-check: scala_tests $(tests)
-
+check: chisel_tests $(tests)
 $(tests): $(project)
 	@./scripts/run_test.sh $@
+
 
 synth: check-board-vars $(project).bit ## Synthesizes for target BOARD with "make BOARD=board synth"
 
 check-board-vars:
-	@test -n "$(LPF)" || (echo "If synthesizing or programming, use \"synth\" or \"prog\" targets with BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
+	@test -n "$(BOARD)" || (echo "Always set BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\", \"polarfireeval\"." ; exit 1)
 
 $(project).json: $(verilog_files)
 	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $(generated_files)/$@ -top $(toplayer)"
@@ -75,6 +79,7 @@ clean: ## Clean all generated files
 	@./scripts/mill clean
 	@rm -rf obj_dir test_run_dir target project
 	@rm -rf $(generated_files)
+	@rm -rf out
 	@rm -f $(project)
 
 help:
@@ -86,6 +91,6 @@ help:
 	@echo ""
 	@grep -E 'BOARD|##' Makefile.boards |sed 's/.*BOARD)\,\(.*\))/\1/' | sed -n 'N;s/\n/ /;p' | awk -F"[ \t]*##" '{printf "\033[36m%-15s\033[0m - %s\n", $$1, $$2}'
 
-.PHONY: clean prog help
+.PHONY: chisel clean prog help
 .PRECIOUS: $(project).json $(project).config $(project).bit
 .DEFAULT_GOAL := help
