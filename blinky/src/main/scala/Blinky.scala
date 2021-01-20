@@ -11,16 +11,15 @@ class Blinky(freq: Int) extends Module {
     val led2 = Output(Bool())
   })
 
-  val blk = RegInit(1.U)
-  val (counterValue, counterWrap) = Counter(true.B, freq)
-  val CNT_MAX = (freq / 2 - 1).U;
-
-  when(counterValue === CNT_MAX) {
-    blk := ~blk
+  val led = RegInit(0.U(1.W))
+  val (counterValue, counterWrap) = Counter(true.B, freq / 2)
+  when(counterWrap) {
+    led := ~led
   }
-  io.led0 := blk
-  io.led1 := ~blk
-  io.led2 := blk
+
+  io.led0 := led
+  io.led1 := ~led
+  io.led2 := led
 
   // io.led0 := counterValue(22)
   // io.led1 := counterValue(23)

@@ -38,9 +38,8 @@ tests = $(sort $(patsubst tests/%.out,%,$(wildcard tests/*.out)))
 # Targets
 
 
-chisel: $(verilog_files) check-board-vars ## Generates Verilog code from Chisel sources
-$(verilog_files): $(scala_files)
-	@rm -rf $(generated_files)
+chisel: $(verilog_files)   ## Generates Verilog code from Chisel sources
+$(verilog_files): $(scala_files) check-board-vars clean
 	BOARD=${BOARD} scripts/mill $(project).run -td $(generated_files)
 
 

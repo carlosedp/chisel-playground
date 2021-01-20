@@ -2,13 +2,10 @@
 // Version: v12.4 12.900.0.16
 
 module PLL0(
-       clko,
-       lock,
-       clki
+    input clki, // 50 MHz, 0 deg
+    output clko, // 25 MHz, 0 deg
+    output lock
     );
-output clko;
-output lock;
-input  clki;
 
     wire gnd_net, vcc_net, pll_inst_0_clkint_0;
 
@@ -21,7 +18,7 @@ input  clki;
         , .BYPASS_PLL(4'b0), .BYPASS_OUT_DIVIDER(4'b0), .FF_REQUIRES_LOCK(1'b0)
         , .FSE_N(1'b0), .FB_CLK_SEL_0(2'b00), .FB_CLK_SEL_1(1'b0), .RFDIV(6'b000001)
         , .FRAC_EN(1'b0), .FRAC_DAC_EN(1'b0), .DIV0_RST_DELAY(3'b000)
-        , .DIV0_VAL(7'b0011001), .DIV1_RST_DELAY(3'b0), .DIV1_VAL(7'b1)
+        , .DIV0_VAL(7'b0110010), .DIV1_RST_DELAY(3'b0), .DIV1_VAL(7'b1)
         , .DIV2_RST_DELAY(3'b0), .DIV2_VAL(7'b1), .DIV3_RST_DELAY(3'b0)
         , .DIV3_VAL(7'b1), .DIV3_CLK_SEL(1'b0), .BW_INT_CTRL(2'b0), .BW_PROP_CTRL(2'b01)
         , .IREF_EN(1'b1), .IREF_TOGGLE(1'b0), .LOCK_CNT(4'b1000), .DESKEW_CAL_CNT(3'b110)
