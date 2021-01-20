@@ -2,6 +2,11 @@
 import mill._, scalalib._
 import coursier.MavenRepository
 
+object Deps {
+  val mainClass = "Toplayer"
+  val scalaVersion = "2.12.12"
+}
+
 /**
   * Scala 2.12 module that is source-compatible with 2.11.
   * This is due to Chisel's use of structural types. See
@@ -19,16 +24,16 @@ trait HasXsource211 extends ScalaModule {
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = Agg(
-    ivy"edu.berkeley.cs::chisel3:3.2.+"
+    ivy"edu.berkeley.cs::chisel3:3.4.1"
   )
 }
 
 trait HasChiselTests extends CrossSbtModule {
   object test extends Tests {
     override def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.0.5",
-      ivy"edu.berkeley.cs::chisel-iotesters:1.3+",
-      ivy"edu.berkeley.cs::chiseltest:0.2-SNAPSHOT"
+      ivy"org.scalatest::scalatest:3.2.2",
+      ivy"edu.berkeley.cs::chisel-iotesters:1.5.0",
+      ivy"edu.berkeley.cs::chiseltest:0.3.0"
     )
     def repositories = super.repositories ++ Seq(
       MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")
@@ -51,6 +56,6 @@ object blinky
     with HasXsource211
     with HasMacroParadise {
   override def millSourcePath = super.millSourcePath
-  def crossScalaVersion = "2.12.11"
-  def mainClass = Some("Blinky")
+  def crossScalaVersion = Deps.scalaVersion
+  def mainClass = Some(Deps.mainClass)
 }
