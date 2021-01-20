@@ -33,7 +33,7 @@ trait HasChiselTests extends CrossSbtModule {
     override def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.2",
       ivy"edu.berkeley.cs::chisel-iotesters:1.5.0",
-      ivy"edu.berkeley.cs::chiseltest:0.3.0"
+      ivy"edu.berkeley.cs::chiseltest:0.3.1"
     )
     def repositories = super.repositories ++ Seq(
       MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")

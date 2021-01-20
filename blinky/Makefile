@@ -33,23 +33,17 @@ scala_files = $(wildcard src/main/scala/*scala)
 generated_files = generated
 verilog_files = $(generated_files)/*.v
 
-tests = $(sort $(patsubst tests/%.out,%,$(wildcard tests/*.out)))
-
 # Targets
-
 
 chisel: $(verilog_files)   ## Generates Verilog code from Chisel sources
 $(verilog_files): $(scala_files) check-board-vars clean
 	BOARD=${BOARD} scripts/mill $(project).run -td $(generated_files)
 
 
-chisel_tests: $(project) ## Run Chisel tests
-	scripts/mill $(project).test -td $(generated_files)
+chisel_tests: ## Run Chisel tests
+	scripts/mill $(project).test
 
-check: chisel_tests $(tests)
-$(tests): $(project)
-	@./scripts/run_test.sh $@
-
+check: chisel_tests
 
 synth: check-board-vars $(project).bit ## Synthesizes for target BOARD with "make BOARD=board synth"
 
@@ -73,6 +67,11 @@ $(project).svf: $(project).bit
 
 prog: check-board-vars $(project).svf ## Programs target BOARD with "make BOARD=board prog"
 	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $(generated_files)/$(project).svf; exit"
+
+pll:
+	# For ecp5
+	$(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppll -n PLL0 --clkin_name clki -i 25 --clkout0_name clko -o 50 -f /host/pll.v
+	# For ice40k use ghdl/synth:icestorm
 
 clean: ## Clean all generated files
 	@./scripts/mill clean
