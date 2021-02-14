@@ -1,0 +1,62 @@
+CAPI=2:
+
+name: carlosedp:demo:chiselblinky:0
+
+filesets:
+  polarfireeval:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/polarfire_evaluation.pdc: { file_type: PDC }
+
+  ulx3s:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
+
+targets:
+  polarfireeval_es:
+    default_tool: libero
+    description: Microsemi Polarfire Evaluation Kit (ES)
+    filesets: [polarfireeval]
+    generate: [polarfireeval]
+    tools:
+      libero:
+        family: PolarFire
+        die: MPF300TS_ES
+        package: FCG1152
+    toplevel: Toplayer
+
+  ulx3s_85:
+    default_tool: trellis
+    description: ULX3S 85k version
+    filesets: [ulx3s]
+    generate: [ulx3s]
+    tools:
+      diamond:
+        part: LFE5U-85F-6BG381C
+      trellis:
+        nextpnr_options: [--package, CABGA381, --85k]
+    toplevel: Toplayer
+
+generate:
+  polarfireeval:
+    generator: chisel
+    parameters:
+      board: polarfireeval
+      chiselproject: blinky
+      copy_core: true
+      output:
+        files:
+          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/pll_polarfireeval.v: { file_type: verilogSource }
+
+  ulx3s:
+    generator: chisel
+    parameters:
+      board: ulx3s
+      chiselproject: blinky
+      copy_core: true
+      output:
+        files:
+          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/pll_ulx3s.v: { file_type: verilogSource }

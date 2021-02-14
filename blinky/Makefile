@@ -39,6 +39,8 @@ chisel: $(verilog_files)   ## Generates Verilog code from Chisel sources
 $(verilog_files): $(scala_files) check-board-vars clean
 	BOARD=${BOARD} scripts/mill $(project).run -td $(generated_files)
 
+chisel-sbt:   ## Generates Verilog code from Chisel sources using SBT
+	BOARD=${BOARD} sbt "run -td $(generated_files)"
 
 chisel_tests: ## Run Chisel tests
 	scripts/mill $(project).test
@@ -67,6 +69,9 @@ $(project).svf: $(project).bit
 
 prog: check-board-vars $(project).svf ## Programs target BOARD with "make BOARD=board prog"
 	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $(generated_files)/$(project).svf; exit"
+
+progscript:
+	scripts/mill templateScript template/${BOARD}.mustache generated/${BOARD}_script.tcl
 
 pll:
 	# For ecp5

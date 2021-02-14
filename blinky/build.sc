@@ -1,10 +1,14 @@
-// Works with mill 0.6.0
-import mill._, scalalib._
+import mill._, scalalib._, scalafmt._
 import coursier.MavenRepository
+import java.io._
+import java.nio.file.{Paths, Files}
+import $ivy.`org.scalatra.scalate::scalate-core:1.9.6`, org.fusesource.scalate._
+import $ivy.`org.slf4j:slf4j-simple:1.7.30`
 
 object Deps {
   val mainClass = "Toplayer"
   val scalaVersion = "2.12.12"
+  val chiselVersion = "3.4.1"
 }
 
 /**
@@ -24,7 +28,7 @@ trait HasXsource211 extends ScalaModule {
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = Agg(
-    ivy"edu.berkeley.cs::chisel3:3.4.1"
+    ivy"edu.berkeley.cs::chisel3:${Deps.chiselVersion}"
   )
 }
 
@@ -54,6 +58,7 @@ object blinky
     with HasChisel3
     with HasChiselTests
     with HasXsource211
+    with ScalafmtModule
     with HasMacroParadise {
   override def millSourcePath = super.millSourcePath
   def crossScalaVersion = Deps.scalaVersion

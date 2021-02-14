@@ -1,5 +1,4 @@
 import chisel3._
-import chisel3.stage._
 
 // Blinking LED top layer
 class Toplayer extends Module {
@@ -13,7 +12,7 @@ class Toplayer extends Module {
   val board = sys.env("BOARD")
   val pll = Module(new PLL0(board))
 
-  // Instantiate the Blink module using 25Mhz from PLLs
+  // Instantiate the Blink module using 25Mhz from PLL output
   val bl = Module(new Blinky(25000000))
 
   // Connect IO between Toplayer and Blinky
