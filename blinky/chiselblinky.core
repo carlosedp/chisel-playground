@@ -13,6 +13,31 @@ filesets:
     files:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
 
+generate:
+  polarfireeval:
+    generator: chisel
+    parameters:
+      env:
+        BOARD: polarfireeval
+      chiselproject: blinky
+      copy_core: true
+      output:
+        files:
+          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/pll_polarfireeval.v: { file_type: verilogSource }
+
+  ulx3s:
+    generator: chisel
+    parameters:
+      env:
+        BOARD: ulx3s
+      chiselproject: blinky
+      copy_core: true
+      output:
+        files:
+          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/pll_ulx3s.v: { file_type: verilogSource }
+
 targets:
   polarfireeval_es:
     default_tool: libero
@@ -37,26 +62,3 @@ targets:
       trellis:
         nextpnr_options: [--package, CABGA381, --85k]
     toplevel: Toplayer
-
-generate:
-  polarfireeval:
-    generator: chisel
-    parameters:
-      board: polarfireeval
-      chiselproject: blinky
-      copy_core: true
-      output:
-        files:
-          - generated/Toplayer.v: { file_type: verilogSource }
-          - generated/pll_polarfireeval.v: { file_type: verilogSource }
-
-  ulx3s:
-    generator: chisel
-    parameters:
-      board: ulx3s
-      chiselproject: blinky
-      copy_core: true
-      output:
-        files:
-          - generated/Toplayer.v: { file_type: verilogSource }
-          - generated/pll_ulx3s.v: { file_type: verilogSource }
