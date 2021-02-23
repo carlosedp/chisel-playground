@@ -1,6 +1,6 @@
 
 
-project = blink
+project = top
 toplayer = BlinkTop
 
 scala_files = $(wildcard src/main/scala/*scala)
@@ -14,21 +14,22 @@ PCF        ?=  constraints/fomu-pvt.pcf
 FPGA       ?=  ice40
 
 # Tools Configuration
-# DOCKER=docker
-# PWD = $(shell pwd)
-# DOCKERARGS = run --rm -v $(PWD):/src -w /src
-# YOSYS          = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
-# NEXTPNR        = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-$(FPGA) nextpnr-$(FPGA)
-# ICEPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:icestorm icepack
+DOCKER=docker
+PWD = $(shell pwd)
+DOCKERARGS = run --rm -v $(PWD):/src -w /src
+YOSYS          = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
+NEXTPNR        = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-$(FPGA) nextpnr-$(FPGA)
+ICEPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:icestorm icepack
 
-YOSYS     = yosys
-NEXTPNR   = nextpnr-$(FPGA)
-ICEPACK   = icepack
+# YOSYS     = yosys
+# NEXTPNR   = nextpnr-$(FPGA)
+# ICEPACK   = icepack
 # Targets
 
 all: $(project).dfu
 
 # Generate Verilog files from Chisel
+chisel: $(verilog_files)
 $(verilog_files): $(scala_files)
 	scripts/mill $(project).run -td $(generated_files)
 

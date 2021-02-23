@@ -4,12 +4,12 @@ import chisel3.util.HasBlackBoxInline
 class ICE40ledDrvBlackBox() extends BlackBox with HasBlackBoxInline {
   val io = IO(new Bundle() {
     // LED inputs and outputs
-    val rgb0_in = Input(UInt(1.W))
-    val rgb1_in = Input(UInt(1.W))
-    val rgb2_in = Input(UInt(1.W))
-    val rgb0_out = Output(UInt(1.W))
-    val rgb1_out = Output(UInt(1.W))
-    val rgb2_out = Output(UInt(1.W))
+    val rgb0_in = Input(Bool())
+    val rgb1_in = Input(Bool())
+    val rgb2_in = Input(Bool())
+    val rgb0_out = Output(Bool())
+    val rgb1_out = Output(Bool())
+    val rgb2_out = Output(Bool())
   })
 
   setInline(
