@@ -3,7 +3,6 @@ import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
 
 class BlinkySpec extends AnyFlatSpec with Matchers {
-
   "Blinky" should "pass" in {
     chisel3.iotesters.Driver(() => new Blinky(25000)) { c =>
       new PeekPokeTester(c) {
@@ -20,5 +19,35 @@ class BlinkySpec extends AnyFlatSpec with Matchers {
       }
     } should be(true)
   }
+}
 
+// Verilator sim
+class VerilatorSpec extends AnyFlatSpec with Matchers {
+  "VerilatorSim" should "pass" in {
+    Driver.execute(
+      Array("--backend-name", "verilator"),
+      () => new Blinky(1)
+    ) { c =>
+      new WaveformCounterTester(c, 25)
+    } should be(true)
+  }
+}
+
+// Generate VCD output
+class WaveformCounterSpec extends AnyFlatSpec with Matchers {
+  "WaveformCounter" should "pass" in {
+    Driver.execute(
+      Array("--generate-vcd-output", "on"),
+      () => new Blinky(1)
+    ) { c =>
+      new WaveformCounterTester(c, 25)
+    } should be(true)
+  }
+}
+
+class WaveformCounterTester(dut: Blinky, cycles: Int)
+    extends PeekPokeTester(dut) {
+  for (_ <- 0 until cycles) {
+    step(1)
+  }
 }

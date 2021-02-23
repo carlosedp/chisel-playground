@@ -7,8 +7,8 @@ import $ivy.`org.slf4j:slf4j-simple:1.7.30`
 
 object Deps {
   val mainClass = "Toplayer"
-  val scalaVersion = "2.12.12"
-  val chiselVersion = "3.4.1"
+  val scalaVersion = "2.12.13"
+  val chiselVersion = "3.4.2"
 }
 
 /**
@@ -43,6 +43,10 @@ trait HasChiselTests extends CrossSbtModule {
       MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")
     )
     def testFrameworks = Seq("org.scalatest.tools.Framework")
+
+    def testOne(args: String*) = T.command {
+      super.runMain("org.scalatest.run", args: _*)
+    }
   }
 }
 
