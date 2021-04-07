@@ -10,16 +10,16 @@ class ICE40pllBlackbox() extends BlackBox with HasBlackBoxInline {
   setInline(
     "ICE40pllBlackbox.v",
     s"""
-        | module ICE40pllBlackbox(
-        |     input clki,
-        |     output clko
-        | );
-        |
-        | SB_GB clk_gb (
-        |         .USER_SIGNAL_TO_GLOBAL_BUFFER(clki),
-        |         .GLOBAL_BUFFER_OUTPUT(clko)
-        |     );
-        | endmodule
-        |""".stripMargin
+       | module ICE40pllBlackbox(
+       |     input clki,
+       |     output clko
+       | );
+       |
+       | SB_GB clk_gb (
+       |         .USER_SIGNAL_TO_GLOBAL_BUFFER(clki),
+       |         .GLOBAL_BUFFER_OUTPUT(clko)
+       |     );
+       | endmodule
+       |""".stripMargin
   )
 }

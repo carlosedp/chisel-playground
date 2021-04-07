@@ -1,5 +1,4 @@
 import chisel3._
-import chisel3.stage._
 import chisel3.experimental._
 import chisel3.util._
 import firrtl.annotations.PresetAnnotation
@@ -9,7 +8,7 @@ import firrtl.annotations.PresetAnnotation
 class BlinkTop extends RawModule {
   val io = IO(new Bundle {
     // 48MHz Clock input
-    val clki = Input(Clock())
+    val clki  = Input(Clock())
     val reset = Input(AsyncReset())
 
     // LED outputs
@@ -20,8 +19,8 @@ class BlinkTop extends RawModule {
 
     // USB Pins (which should be statically driven if not being used).
     // --------
-    val usb_dp = Output(Bool())
-    val usb_dn = Output(Bool())
+    val usb_dp    = Output(Bool())
+    val usb_dn    = Output(Bool())
     val usb_dp_pu = Output(Bool())
   })
 
@@ -47,28 +46,16 @@ class BlinkTop extends RawModule {
 
   chisel3.withClockAndReset(pll.io.clko, io.reset) {
     // In this withClock scope, all synchronous elements are clocked against pll.io.clko.
-    val (counterValue, counterWrap) = Counter(true.B, 48000000)
+    val (counterValue, _) = Counter(true.B, 48000000)
     ledDrv.io.rgb0_in := counterValue(23)
     ledDrv.io.rgb1_in := counterValue(24)
     ledDrv.io.rgb2_in := counterValue(25)
-    // when(counterValue >= 0.U && counterValue < 16000000.U) {
-    //   ledDrv.io.rgb0_in := 1.U
-    //   ledDrv.io.rgb1_in := 0.U
-    //   ledDrv.io.rgb2_in := 0.U
-    // }.elsewhen(counterValue >= 16000000.U && counterValue < 32000000.U) {
-    //   ledDrv.io.rgb0_in := 0.U
-    //   ledDrv.io.rgb1_in := 1.U
-    //   ledDrv.io.rgb2_in := 0.U
-    // }.elsewhen(counterValue >= 32000000.U && counterValue < 48000000.U) {
-    //   ledDrv.io.rgb0_in := 0.U
-    //   ledDrv.io.rgb1_in := 0.U
-    //   ledDrv.io.rgb2_in := 1.U
-    // }
   }
 }
 
-/** An object extending App to generate the Verilog code.
-  */
+/**
+ * An object extending App to generate the Verilog code.
+ */
 object Blink extends App {
   (new chisel3.stage.ChiselStage).emitVerilog(
     new BlinkTop(),

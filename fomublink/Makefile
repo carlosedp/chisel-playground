@@ -1,6 +1,4 @@
-
-
-project = top
+project = toplevel
 toplayer = BlinkTop
 
 scala_files = $(wildcard src/main/scala/*scala)
@@ -17,21 +15,27 @@ FPGA       ?=  ice40
 DOCKER=docker
 PWD = $(shell pwd)
 DOCKERARGS = run --rm -v $(PWD):/src -w /src
-YOSYS          = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
-NEXTPNR        = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-$(FPGA) nextpnr-$(FPGA)
-ICEPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:icestorm icepack
+# Using Docker containers
+# YOSYS          = $(DOCKER) $(DOCKERARGS) hdlc/yosys yosys
+# NEXTPNR        = $(DOCKER) $(DOCKERARGS) hdlc/nextpnr nextpnr-$(FPGA)
+# ICEPACK        = $(DOCKER) $(DOCKERARGS) hdlc/icestorm icepack
 
-# YOSYS     = yosys
-# NEXTPNR   = nextpnr-$(FPGA)
-# ICEPACK   = icepack
+# Using local tools
+YOSYS     = yosys
+NEXTPNR   = nextpnr-$(FPGA)
+ICEPACK   = icepack
+
 # Targets
-
 all: $(project).dfu
 
 # Generate Verilog files from Chisel
 chisel: $(verilog_files)
 $(verilog_files): $(scala_files)
 	scripts/mill $(project).run -td $(generated_files)
+
+fmt:
+	scripts/mill $(project).reformat
+	scripts/mill $(project).fix
 
 # Use *Yosys* to generate the synthesized netlist.
 # This is called the **synthesis** and **tech mapping** step.
@@ -66,9 +70,9 @@ load: $(project).dfu
 clean: ## Clean all generated files
 	@./scripts/mill clean
 	@rm -f $(project).fir $(project).anno.json $(project).v
-	@rm -rf obj_dir test_run_dir target project
+	@rm -rf obj_dir test_run_dir target
 	@rm -rf $(generated_files)
 	@rm -f $(project)
 	@rm -rf *.bit *.json *.svf *.config out *.fir *.v *.f
 
-.PHONY: clean prog help
+.PHONY: clean

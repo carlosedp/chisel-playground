@@ -6,6 +6,26 @@ This project uses two blackbox modules to import Verilog code from ICE40 IP, one
 
 ## Synthesis using Open Source tools (yosys/nextpnr)
 
-To synthesize and program, you need to download fomu-toolchain from <https://github.com/im-tomu/fomu-toolchain/releases/latest>.
+To synthesize and program, you need to download fomu-toolchain from <https://github.com/im-tomu/fomu-toolchain/releases/latest> and add it to your path.
 
-Unzip it into your computer and add it's `bin` dir to the path.
+For example, on Mac:
+
+```sh
+wget https://github.com/im-tomu/fomu-toolchain/releases/download/v1.5.6/fomu-toolchain-macos-v1.5.6.zip
+unzip fomu-toolchain-macos-v1.5.6.zip
+
+# Add to path
+export PATH=$(realpath ./bin):$PATH
+```
+
+Build the bitstream:
+
+```sh
+make
+```
+
+And finally, with the Fomu connected, program the bitstream:
+
+```sh
+make load
+```
