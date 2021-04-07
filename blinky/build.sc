@@ -1,43 +1,35 @@
-import mill._, scalalib._, scalafmt._
+import mill._
+import mill.scalalib._
+import scalafmt._
 import coursier.MavenRepository
-import java.io._
-import java.nio.file.{Paths, Files}
-import $ivy.`org.scalatra.scalate::scalate-core:1.9.6`, org.fusesource.scalate._
-import $ivy.`org.slf4j:slf4j-simple:1.7.30`
+import $ivy.`com.goyeau::mill-scalafix:0.2.1`
+import com.goyeau.mill.scalafix.ScalafixModule
 
-object Deps {
-  val mainClass = "Toplayer"
-  val scalaVersion = "2.12.13"
-  val chiselVersion = "3.4.2"
-}
+def mainClass = Some("Toplevel")
 
-/**
-  * Scala 2.12 module that is source-compatible with 2.11.
-  * This is due to Chisel's use of structural types. See
-  * https://github.com/freechipsproject/chisel3/issues/606
-  */
-trait HasXsource211 extends ScalaModule {
-  override def scalacOptions = T {
-    super.scalacOptions() ++ Seq(
-      "-deprecation",
-      "-unchecked",
-      "-Xsource:2.11"
-    )
-  }
-}
+val defaultVersions = Map(
+  "scala"            -> "2.12.12",
+  "chisel3"          -> "3.4.3",
+  "chisel-iotesters" -> "1.5.0",
+  "chiseltest"       -> "0.3.1",
+  "scalatest"        -> "3.2.2",
+  "organize-imports" -> "0.5.0",
+  "paradise"         -> "2.1.1"
+)
+val binCrossScalaVersions = Seq("2.12.10", "2.11.12")
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = Agg(
-    ivy"edu.berkeley.cs::chisel3:${Deps.chiselVersion}"
+    ivy"edu.berkeley.cs::chisel3:${defaultVersions("chisel3")}"
   )
 }
 
 trait HasChiselTests extends CrossSbtModule {
   object test extends Tests {
     override def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.2.2",
-      ivy"edu.berkeley.cs::chisel-iotesters:1.5.0",
-      ivy"edu.berkeley.cs::chiseltest:0.3.1"
+      ivy"org.scalatest::scalatest:${defaultVersions("scalatest")}",
+      ivy"edu.berkeley.cs::chisel-iotesters:${defaultVersions("chisel-iotesters")}",
+      ivy"edu.berkeley.cs::chiseltest:${defaultVersions("chiseltest")}"
     )
     def repositories = super.repositories ++ Seq(
       MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")
@@ -52,19 +44,51 @@ trait HasChiselTests extends CrossSbtModule {
 
 trait HasMacroParadise extends ScalaModule {
   // Enable macro paradise for @chiselName et al
-  val macroPlugins = Agg(ivy"org.scalamacros:::paradise:2.1.1")
+  val macroPlugins        = Agg(ivy"org.scalamacros:::paradise:${defaultVersions("paradise")}")
   def scalacPluginIvyDeps = macroPlugins
-  def compileIvyDeps = macroPlugins
+  def compileIvyDeps      = macroPlugins
 }
 
-object blinky
+/**
+ * Scala 2.12 module that is source-compatible with 2.11.
+ * This is due to Chisel's use of structural types. See
+ * https://github.com/freechipsproject/chisel3/issues/606
+ */
+trait HasXsource211 extends ScalaModule {
+  override def scalacOptions = T {
+    super.scalacOptions() ++ Seq(
+      "-deprecation",
+      "-unchecked",
+      "-Xsource:2.11"
+    )
+  }
+}
+
+trait CodeQuality extends ScalafixModule with ScalafmtModule {
+  def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${defaultVersions("organize-imports")}")
+}
+
+trait ScalacOptions extends ScalaModule {
+  override def scalacOptions = T {
+    super.scalacOptions() ++ Seq(
+      "-language:reflectiveCalls",
+      "-feature",
+      "-Xfatal-warnings",
+      "-Ywarn-value-discard",
+      "-Ywarn-dead-code",
+      "-Ywarn-unused"
+    )
+  }
+}
+
+object toplevel
     extends CrossSbtModule
     with HasChisel3
     with HasChiselTests
     with HasXsource211
-    with ScalafmtModule
-    with HasMacroParadise {
+    with HasMacroParadise
+    with CodeQuality
+    with ScalacOptions {
   override def millSourcePath = super.millSourcePath
-  def crossScalaVersion = Deps.scalaVersion
-  def mainClass = Some(Deps.mainClass)
+  def crossScalaVersion       = defaultVersions("scala")
 }

@@ -2,85 +2,78 @@
 include Makefile.boards
 SHELL = bash
 
+# Project name and toplevel
+project = toplevel
+toplevel = Toplevel
+
 # Use Docker images
 DOCKER=docker
-
-project = blinky
-toplayer = Toplayer
 
 PWD = $(shell pwd)
 USBDEVICE ?= /dev/bus/usb
 DOCKERARGS = run --rm -v $(PWD):/src -w /src
 VERILATORARGS = run --name verilator --hostname verilator --rm -it --entrypoint= -v $(PWD):/work -w /work
 
-YOSYS          = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
-NEXTPNR        = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-$(FPGA) nextpnr-$(FPGA)
-ECPPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppack
-ICEPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:icestorm icepack
-OPENOCD_DEF    = $(DOCKER) $(DOCKERARGS) --privileged --device $(USBDEVICE):/dev/bus/usb ghdl/synth:prog openocd
-OPENOCD_ULX3S  = $(DOCKER) $(DOCKERARGS) --privileged --device $(USBDEVICE):/dev/bus/usb alpin3/ulx3s openocd
-VERILATOR      = $(DOCKER) $(VERILATORARGS) verilator/verilator
-
-# Uncomment to use local tools for synthesis
-#YOSYS     = yosys
-#NEXTPNR   = nextpnr-$(FPGA)
-#ECPPACK   = ecppack
-#OPENOCD_DEF   = openocd
-#OPENOCD_ULX3S   = openocd
-#VERILATOR = verilator
+ifeq ($(DOCKER),docker)
+YOSYS          = $(DOCKER) $(DOCKERARGS) hdlc/yosys yosys
+NEXTPNR        = $(DOCKER) $(DOCKERARGS) hdlc/nextpnr nextpnr-$(FPGA)
+ECPPACK        = $(DOCKER) $(DOCKERARGS) hdlc/prjtrellis ecppack
+ICEPACK        = $(DOCKER) $(DOCKERARGS) hdlc/icestorm icepack
+OPENOCD_DEF    = $(DOCKER) $(DOCKERARGS) --privileged --device $(USBDEVICE):/dev/bus/usb hdlc/prog openocd
+VERILATOR      = $(DOCKER) $(VERILATORARGS) hdlc/verilator
+else
+YOSYS     = yosys
+NEXTPNR   = nextpnr-$(FPGA)
+ECPPACK   = ecppack
+ICEPACK   = icepack
+OPENOCD_DEF   = openocd
+OPENOCD_ULX3S   = openocd
+VERILATOR = verilator
+endif
 
 scala_files = $(wildcard src/main/scala/*scala)
 generated_files = generated
 verilog_files = $(generated_files)/*.v
 
 # Targets
-
-chisel: $(verilog_files)   ## Generates Verilog code from Chisel sources
+chisel: $(verilog_files)   ## Generates Verilog code from Chisel sources using Mill
 $(verilog_files): $(scala_files) check-board-vars clean
-	BOARD=${BOARD} scripts/mill $(project).run -td $(generated_files)
+	scripts/mill $(project).run -board ${BOARD} -td $(generated_files)
 
 chisel-sbt:   ## Generates Verilog code from Chisel sources using SBT
-	BOARD=${BOARD} sbt "run -td $(generated_files)"
+	sbt "run -board ${BOARD} -td $(generated_files)"
 
-chisel_tests: ## Run Chisel tests
+chisel_tests:
 	scripts/mill $(project).test
 
-check: chisel_tests
+check: chisel_tests ## Run Chisel tests
+
+fmt:
+	scripts/mill $(project).reformat
+	scripts/mill $(project).fix
 
 synth: check-board-vars $(project).bit ## Synthesizes for target BOARD with "make BOARD=board synth"
 
 check-board-vars:
-	@test -n "$(BOARD)" || (echo "Always set BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\", \"polarfireeval\"." ; exit 1)
+	@test -n "$(BOARD)" || (echo "Set BOARD variable to a board from:" ; echo -n "  "; cat Makefile.boards|grep BOARD| cut -d ',' -f 2 |tr -s ')\n' ', ' | sed 's/, $$/\n/'; echo "Eg. make chisel BOARD=polarfireeval"; echo; exit 1)
 
 $(project).json: $(verilog_files)
-	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $(generated_files)/$@ -top $(toplayer)"
+	$(YOSYS) -p "read_verilog -sv $^; synth_$(FPGA) -json $(generated_files)/$@ -top $(toplevel)"
 
 $(project).config: $(project).json $(LPF)
 	$(NEXTPNR) --json $(generated_files)/$< --lpf $(LPF) --textcfg $(generated_files)/$@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
 
 $(project).bit: $(project).config
 	$(PACK) --svf $(generated_files)/$(project).svf $(generated_files)/$< $(generated_files)/$@
-# if [ -"$(FPGA)" == "ecp5" ]; then \
-# elif [ "$(FPGA)" ==  "ice40" ]; then \
-# 	$(PACK) $< $@ \
-# endif
 
 $(project).svf: $(project).bit
 
 prog: check-board-vars $(project).svf ## Programs target BOARD with "make BOARD=board prog"
 	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $(generated_files)/$(project).svf; exit"
 
-progscript:
-	scripts/mill templateScript template/${BOARD}.mustache generated/${BOARD}_script.tcl
-
-pll:
-	# For ecp5
-	$(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppll -n PLL0 --clkin_name clki -i 25 --clkout0_name clko -o 50 -f /host/pll.v
-	# For ice40k use ghdl/synth:icestorm
-
 clean: ## Clean all generated files
 	@./scripts/mill clean
-	@rm -rf obj_dir test_run_dir target project
+	@rm -rf obj_dir test_run_dir target
 	@rm -rf $(generated_files)
 	@rm -rf out
 	@rm -f $(project)

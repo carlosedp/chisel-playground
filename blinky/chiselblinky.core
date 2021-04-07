@@ -17,25 +17,23 @@ generate:
   polarfireeval:
     generator: chisel
     parameters:
-      env:
-        BOARD: polarfireeval
-      chiselproject: blinky
+      extraargs: "-board polarfireeval"
+      chiselproject: toplevel
       copy_core: true
       output:
         files:
-          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_polarfireeval.v: { file_type: verilogSource }
 
   ulx3s:
     generator: chisel
     parameters:
-      env:
-        BOARD: ulx3s
-      chiselproject: blinky
+      extraargs: "-board ulx3s"
+      chiselproject: toplevel
       copy_core: true
       output:
         files:
-          - generated/Toplayer.v: { file_type: verilogSource }
+          - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_ulx3s.v: { file_type: verilogSource }
 
 targets:
@@ -49,7 +47,7 @@ targets:
         family: PolarFire
         die: MPF300TS_ES
         package: FCG1152
-    toplevel: Toplayer
+    toplevel: Toplevel
 
   ulx3s_85:
     default_tool: trellis
@@ -61,4 +59,4 @@ targets:
         part: LFE5U-85F-6BG381C
       trellis:
         nextpnr_options: [--package, CABGA381, --85k]
-    toplevel: Toplayer
+    toplevel: Toplevel

@@ -2,8 +2,8 @@ import chisel3._
 import chisel3.util._
 
 /**
-  * The blinking LED component.
-  */
+ * The blinking LED component.
+ */
 class Blinky(freq: Int) extends Module {
   val io = IO(new Bundle {
     val led0 = Output(Bool())
@@ -11,7 +11,7 @@ class Blinky(freq: Int) extends Module {
     val led2 = Output(Bool())
   })
 
-  val led = RegInit(0.U(1.W))
+  val led                         = RegInit(0.U(1.W))
   val (counterValue, counterWrap) = Counter(true.B, freq / 2)
   when(counterWrap) {
     led := ~led
