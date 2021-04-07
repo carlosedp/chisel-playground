@@ -5,7 +5,7 @@ in [Chisel](https://www.chisel-lang.org/) for learning purposes.
 
 ## Projects
 
-* [Blinky](/blinky) - A blink application that can be synthesizable for Lattice ECP5 FPGA.
+* [Blinky](/blinky) - A blink application that can be synthesizable on multiple FPGA boards by using FuseSoc. Can be used as base for new projects.
 * [Fomublink](/fomublink) - A port from [Fomu](https://tomu.im/fomu.html) blink application that can be synthesizable for Foum ICE40 FPGA.
 
 ## Books and Learning Material
