@@ -19,12 +19,16 @@ val defaultVersions = Map(
   "scalatest"        -> "3.2.2"
 )
 // Import libraries
+externalResolvers += "Scalautils" at "https://maven.pkg.github.com/carlosedp/scalautils"
+libraryDependencies += "com.carlosedp" %% "scalautils" % "0.1.0"
+
 libraryDependencies ++= Seq("chisel3", "chisel-iotesters", "chiseltest").map { dep: String =>
   "edu.berkeley.cs" %% dep % sys.props
     .getOrElse(dep + "Version", defaultVersions(dep))
 }
-libraryDependencies += "org.scalatest"                     %% "scalatest"        % defaultVersions("scalatest")
-addCompilerPlugin("org.scalamacros"                         % "paradise"         % "2.1.1" cross CrossVersion.full)
+libraryDependencies += "org.scalatest" %% "scalatest" % defaultVersions("scalatest")
+addCompilerPlugin("org.scalamacros"     % "paradise"  % "2.1.1" cross CrossVersion.full)
+
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 // Aliases

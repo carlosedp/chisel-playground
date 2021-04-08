@@ -1,4 +1,4 @@
-import Utilities._
+import com.carlosedp.scalautils.ParseArguments
 import chisel3._
 
 // Blinking LED top layer

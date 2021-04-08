@@ -42,6 +42,15 @@ trait HasChiselTests extends CrossSbtModule {
   }
 }
 
+trait HasGithubLibs extends CrossSbtModule {
+  def repositories = super.repositories ++ Seq(
+    MavenRepository("https://maven.pkg.github.com/carlosedp/scalautils")
+  )
+  override def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"com.carlosedp::scalautils:0.1.0"
+  )
+}
+
 trait HasMacroParadise extends ScalaModule {
   // Enable macro paradise for @chiselName et al
   val macroPlugins        = Agg(ivy"org.scalamacros:::paradise:${defaultVersions("paradise")}")
@@ -87,6 +96,7 @@ object toplevel
     with HasChiselTests
     with HasXsource211
     with HasMacroParadise
+    with HasGithubLibs
     with CodeQuality
     with ScalacOptions {
   override def millSourcePath = super.millSourcePath
