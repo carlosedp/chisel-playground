@@ -38,7 +38,11 @@ For example, to generate the programming files for the **ULX3s** based on ECP5:
 mkdir fusesoc-chiselblinky && cd fusesoc-chiselblinky
 
 fusesoc library add fusesoc-cores https://github.com/fusesoc/fusesoc-cores
-fusesoc library add chiselblinky https://github.com/carlosedp/chisel-playground/blinky
+
+# Since Blinky is not a standalone repo (but a folder in an umbrella repo)
+# We clone it locally and add the library as a local dir.
+git clone https://github.com/carlosedp/chisel-playground
+fusesoc library add chiselblinky $(pwd)/chisel-playground/blinky
 
 fusesoc run --target=ulx3s_85 carlosedp:demo:chiselblinky:0
 ...
