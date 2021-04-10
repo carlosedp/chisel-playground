@@ -13,6 +13,11 @@ filesets:
     files:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
 
+  orange-crab:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/orange-crab.lpf: { file_type: LPF }
+
 generate:
   polarfireeval:
     generator: chisel
@@ -35,6 +40,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_ulx3s.v: { file_type: verilogSource }
+
+  orange-crab:
+    generator: chisel
+    parameters:
+      extraargs: "-board orange-crab"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_orange-crab.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -59,4 +75,14 @@ targets:
         part: LFE5U-85F-6BG381C
       trellis:
         nextpnr_options: [--package, CABGA381, --85k]
+    toplevel: Toplevel
+
+  orange-crab:
+    default_tool: trellis
+    description: GsD orangecrab version
+    filesets: [orange-crab]
+    generate: [orange-crab]
+    tools:
+      trellis:
+        nextpnr_options : [--package, CSFBGA285, --25k]
     toplevel: Toplevel
