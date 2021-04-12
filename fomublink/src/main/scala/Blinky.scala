@@ -35,21 +35,23 @@ class BlinkTop extends RawModule {
   io.usb_dp_pu := false.B
 
   // Instantiate the PLL with clock
-  val pll = Module(new ICE40pllBlackbox())
-  pll.io.clki := io.clki
+  val pll = Module(new SB_GB())
+  pll.io.USER_SIGNAL_TO_GLOBAL_BUFFER := io.clki
 
   // Instantiate the RGB Led driver from ICE40 FPGA.
-  val ledDrv = Module(new ICE40ledDrvBlackBox())
-  io.rgb0 := ledDrv.io.rgb0_out
-  io.rgb1 := ledDrv.io.rgb1_out
-  io.rgb2 := ledDrv.io.rgb2_out
+  val ledDrv = Module(new SB_RGBA_DRV())
+  io.rgb0 := ledDrv.io.RGB0
+  io.rgb1 := ledDrv.io.RGB1
+  io.rgb2 := ledDrv.io.RGB2
+  ledDrv.io.CURREN := true.B
+  ledDrv.io.RGBLEDEN := true.B
 
-  chisel3.withClockAndReset(pll.io.clko, io.reset) {
+  chisel3.withClockAndReset(pll.io.GLOBAL_BUFFER_OUTPUT, io.reset) {
     // In this withClock scope, all synchronous elements are clocked against pll.io.clko.
     val (counterValue, _) = Counter(true.B, 48000000)
-    ledDrv.io.rgb0_in := counterValue(23)
-    ledDrv.io.rgb1_in := counterValue(24)
-    ledDrv.io.rgb2_in := counterValue(25)
+    ledDrv.io.RGB2PWM := counterValue(23)
+    ledDrv.io.RGB1PWM := counterValue(24)
+    ledDrv.io.RGB0PWM := counterValue(25)
   }
 }
 
@@ -59,6 +61,6 @@ class BlinkTop extends RawModule {
 object Blink extends App {
   (new chisel3.stage.ChiselStage).emitVerilog(
     new BlinkTop(),
-    Array("-X", "verilog") ++ args
+    args
   )
 }
