@@ -14,9 +14,11 @@ crossScalaVersions := Seq("2.12.10", "2.11.12")
 // Library default versions
 val defaultVersions = Map(
   "chisel3"          -> "3.4.3",
-  "chisel-iotesters" -> "1.5.0",
-  "chiseltest"       -> "0.3.1",
-  "scalatest"        -> "3.2.2"
+  "chisel-iotesters" -> "1.5.3",
+  "chiseltest"       -> "0.3.3",
+  "scalatest"        -> "3.2.7",
+  "organize-imports" -> "0.5.0",
+  "paradise"         -> "2.1.1"
 )
 // Import libraries
 libraryDependencies ++= Seq("chisel3", "chisel-iotesters", "chiseltest").map { dep: String =>
@@ -24,8 +26,8 @@ libraryDependencies ++= Seq("chisel3", "chisel-iotesters", "chiseltest").map { d
     .getOrElse(dep + "Version", defaultVersions(dep))
 }
 libraryDependencies += "org.scalatest"                     %% "scalatest"        % defaultVersions("scalatest")
-addCompilerPlugin("org.scalamacros"                         % "paradise"         % "2.1.1" cross CrossVersion.full)
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
+addCompilerPlugin("org.scalamacros"                         % "paradise"         % defaultVersions("paradise") cross CrossVersion.full)
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % defaultVersions("organize-imports")
 
 // Aliases
 addCommandAlias("com", "all compile test:compile")

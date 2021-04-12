@@ -49,8 +49,7 @@ chisel_tests:
 check: chisel_tests ## Run Chisel tests
 
 fmt:
-	scripts/mill $(project).reformat
-	scripts/mill $(project).fix
+	scripts/mill all $(project).{reformat,fix}
 
 synth: check-board-vars $(project).bit ## Synthesizes for target BOARD with "make BOARD=board synth"
 

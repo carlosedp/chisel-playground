@@ -8,15 +8,17 @@ import com.goyeau.mill.scalafix.ScalafixModule
 def mainClass = Some("Toplevel")
 
 val defaultVersions = Map(
-  "scala"            -> "2.12.12",
-  "chisel3"          -> "3.4.3",
-  "chisel-iotesters" -> "1.5.0",
-  "chiseltest"       -> "0.3.1",
-  "scalatest"        -> "3.2.2",
-  "organize-imports" -> "0.5.0",
-  "paradise"         -> "2.1.1"
+  "scala"             -> "2.12.13",
+  "chisel3"           -> "3.4.3",
+  "chisel-iotesters"  -> "1.5.3",
+  "chiseltest"        -> "0.3.3",
+  "scalatest"         -> "3.2.7",
+  "organize-imports"  -> "0.5.0",
+  "paradise"          -> "2.1.1",
+  "semanticdb-scalac" -> "4.4.12"
 )
-val binCrossScalaVersions = Seq("2.12.10", "2.11.12")
+val binCrossScalaVersions  = Seq("2.12.10", "2.11.12")
+val fullCrossScalaVersions = Seq("2.12.10", "2.11.12")
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = Agg(
@@ -66,6 +68,9 @@ trait HasXsource211 extends ScalaModule {
 
 trait CodeQuality extends ScalafixModule with ScalafmtModule {
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${defaultVersions("organize-imports")}")
+  // Override semanticdb version due to unavailable 4.4.0 for Scala 2.12.13.
+  override def scalacPluginIvyDeps =
+    Agg(ivy"org.scalameta:::semanticdb-scalac:${defaultVersions("semanticdb-scalac")}")
 }
 
 trait ScalacOptions extends ScalaModule {
