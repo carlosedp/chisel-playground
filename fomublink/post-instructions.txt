@@ -1,0 +1,5 @@
+Programming instructions:
+
+Download and install dfu-util from http://dfu-util.sourceforge.net/
+Run:
+    dfu-util -e -d 1209:5bf0 -D {}
