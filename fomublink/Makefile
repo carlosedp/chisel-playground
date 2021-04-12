@@ -34,8 +34,7 @@ $(verilog_files): $(scala_files)
 	scripts/mill $(project).run -td $(generated_files)
 
 fmt:
-	scripts/mill $(project).reformat
-	scripts/mill $(project).fix
+	scripts/mill all $(project).{reformat,fix}
 
 # Use *Yosys* to generate the synthesized netlist.
 # This is called the **synthesis** and **tech mapping** step.
@@ -64,7 +63,7 @@ $(project).dfu: $(project).bit
 	dfu-suffix -v 1209 -p 70b1 -a $(generated_files)/$(project).dfu
 
 # Use df-util to load the DFU image onto the Fomu.
-load: $(project).dfu
+load: clean $(project).dfu
 	dfu-util -D $(generated_files)/$(project).dfu
 
 clean: ## Clean all generated files
