@@ -13,6 +13,11 @@ filesets:
     files:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
 
+  artya7-35t:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/arty_a7.xdc: { file_type: xdc }
+
 generate:
   polarfireeval:
     generator: chisel
@@ -35,6 +40,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_ulx3s.v: { file_type: verilogSource }
+
+  artya7-35t:
+    generator: chisel
+    parameters:
+      extraargs: "-board artya7-35t -invreset false"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_artya7-35t.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -60,3 +76,13 @@ targets:
       trellis:
         nextpnr_options: [--package, CABGA381, --85k]
     toplevel: Toplevel
+
+  artya7-35t:
+    default_tool : vivado
+    description: Digilent ArtyA7-35T Board
+    filesets : [artya7-35t]
+    generate: [artya7-35t]
+    tools:
+      vivado:
+        part : xc7a35ticsg324-1L
+    toplevel : Toplevel
