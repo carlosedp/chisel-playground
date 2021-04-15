@@ -4,11 +4,11 @@ project/target
 project/project
 docs/generated
 docs-target/
-*.fir
-*.v
-*.anno.json
-*.swp
-*~
+/*.fir
+/*.v
+/*.anno.json
+/*.swp
+/*~
 .addons-dont-touch
 /lib/
 /test_lib/
