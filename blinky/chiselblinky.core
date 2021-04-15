@@ -23,6 +23,12 @@ filesets:
       - openocd/digilent-hs1.cfg: { file_type: user }
       - openocd/xilinx-xc7.cfg: { file_type: user }
 
+  orange-crab:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/orange-crab.lpf: { file_type: LPF }
+      
+
 generate:
   polarfireeval:
     generator: chisel
@@ -56,6 +62,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_artya7-35t.v: { file_type: verilogSource }
+
+  orange-crab:
+    generator: chisel
+    parameters:
+      extraargs: "-board orange-crab -invreset true"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_orange-crab.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -109,6 +126,15 @@ targets:
         pnr: vtr
     toplevel : Toplevel
 
+  orange-crab:
+    default_tool: trellis
+    description: GsD orangecrab version 0.2
+    filesets: [orange-crab]
+    generate: [orange-crab]
+    tools:
+      trellis:
+        nextpnr_options : [--package, CSFBGA285, --25k]
+    toplevel: Toplevel
 
 scripts:
   prog-artya7-35t:
