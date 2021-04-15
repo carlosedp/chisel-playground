@@ -3,6 +3,9 @@ CAPI=2:
 name: carlosedp:demo:chiselblinky:0
 
 filesets:
+  proginfo:
+    files: [scripts/proginfo.py : {file_type : user, copyto : proginfo.py}]
+
   polarfireeval:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
@@ -17,6 +20,8 @@ filesets:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/arty_a7.xdc: { file_type: xdc }
+      - openocd/digilent-hs1.cfg: { file_type: user }
+      - openocd/xilinx-xc7.cfg: { file_type: user }
 
 generate:
   polarfireeval:
@@ -68,8 +73,10 @@ targets:
   ulx3s_85:
     default_tool: trellis
     description: ULX3S 85k version
-    filesets: [ulx3s]
+    filesets: [ulx3s, proginfo]
     generate: [ulx3s]
+    hooks:
+      post_run: [prog-ulx3s]
     tools:
       diamond:
         part: LFE5U-85F-6BG381C
@@ -86,3 +93,25 @@ targets:
       vivado:
         part : xc7a35ticsg324-1L
     toplevel : Toplevel
+
+  artya7-35t-oss:
+    default_tool : symbiflow
+    description: Digilent ArtyA7-35T Board using Symbiflow OSS Toolchain
+    filesets : [artya7-35t, proginfo]
+    generate: [artya7-35t]
+    hooks:
+      post_run: [prog-artya7-35t]
+    tools:
+      symbiflow:
+        part : xc7a35t
+        package: csg324-1
+        vendor: xilinx
+        pnr: vtr
+    toplevel : Toplevel
+
+
+scripts:
+  prog-artya7-35t:
+    cmd : [python3, proginfo.py, prog-artya7-35t]
+  prog-ulx3s:
+    cmd : [python3, proginfo.py, prog-ulx3s]
