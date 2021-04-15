@@ -1,0 +1,39 @@
+CAPI=2:
+
+name: carlosedp:demo:fomublink:0
+
+filesets:
+  fomu-pvt:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/fomu-pvt.pcf : {file_type : PCF}
+      - post-instructions.txt:
+          { file_type: user, copyto: post-instructions.txt }
+
+generate:
+  fomu-pvt:
+    generator: chisel
+    parameters:
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/BlinkTop.v: { file_type: verilogSource }
+
+targets:
+  fomu-pvt:
+    default_tool : icestorm
+    description : Fomu PVT with Lattice ICE40UP5K based open-source board
+    hooks:
+      post_run: [dfu-util-fomu]
+    filesets : [fomu-pvt]
+    generate: [fomu-pvt]
+    tools:
+      icestorm:
+        nextpnr_options : ["--up5k", "--package", "uwg30"]
+        pnr : next
+    toplevel : BlinkTop
+
+scripts:
+  dfu-util-fomu:
+    cmd: ["python3", "-c", "import os;print(open('post-instructions.txt','r').read().replace('{}',os.path.join(os.getcwd(), 'carlosedp_demo_fomublink_0.bin')))"]

@@ -17,6 +17,11 @@ filesets:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/orange-crab.lpf: { file_type: LPF }
+      
+  artya7-35t:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/arty_a7.xdc: { file_type: xdc }
 
 generate:
   polarfireeval:
@@ -44,7 +49,18 @@ generate:
   orange-crab:
     generator: chisel
     parameters:
-      extraargs: "-board orange-crab"
+      extraargs: "-board orange-crab -invreset true"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_orange-crab.v: { file_type: verilogSource }
+
+  artya7-35t:
+    generator: chisel
+    parameters:
+      extraargs: "-board artya7-35t -invreset false"
       chiselproject: toplevel
       copy_core: true
       output:
@@ -79,10 +95,20 @@ targets:
 
   orange-crab:
     default_tool: trellis
-    description: GsD orangecrab version
+    description: GsD orangecrab version 0.2
     filesets: [orange-crab]
     generate: [orange-crab]
     tools:
       trellis:
         nextpnr_options : [--package, CSFBGA285, --25k]
     toplevel: Toplevel
+
+  artya7-35t:
+    default_tool : vivado
+    description: Digilent ArtyA7-35T Board
+    filesets : [artya7-35t]
+    generate: [artya7-35t]
+    tools:
+      vivado:
+        part : xc7a35ticsg324-1L
+    toplevel : Toplevel

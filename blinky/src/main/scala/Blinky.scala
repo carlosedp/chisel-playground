@@ -20,5 +20,4 @@ class Blinky(freq: Int) extends Module {
   io.led0 := led
   io.led1 := ~led
   io.led2 := led
-
 }

@@ -1,4 +1,5 @@
-import Utilities._
+import scalautils.ParseArguments
+
 import org.scalatest.flatspec._
 import org.scalatest.matchers.should._
 
