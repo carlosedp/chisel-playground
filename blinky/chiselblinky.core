@@ -95,7 +95,7 @@ targets:
 
   orange-crab:
     default_tool: trellis
-    description: GsD orangecrab version
+    description: GsD orangecrab version 0.2
     filesets: [orange-crab]
     generate: [orange-crab]
     tools:
