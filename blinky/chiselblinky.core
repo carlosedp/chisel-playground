@@ -27,7 +27,12 @@ filesets:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/orange-crab.lpf: { file_type: LPF }
-      
+
+  de1_soc_revF:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/de1_soc_revF.sdc: { file_type: SDC }
+      - constraints/de1_soc_revF.tcl: { file_type: tclSource }
 
 generate:
   polarfireeval:
@@ -73,6 +78,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_orange-crab.v: { file_type: verilogSource }
+
+  de1_soc_revF:
+    generator: chisel
+    parameters:
+      extraargs: "-board de1_soc_revF -invreset true"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_de1_soc_revF.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -134,6 +150,18 @@ targets:
     tools:
       trellis:
         nextpnr_options : [--package, CSFBGA285, --25k]
+    toplevel: Toplevel
+
+  de1_soc_revF:
+    default_tool : quartus
+    description: Altera Cyclone V DE1_SoC board, revision F
+    filesets : [de1_soc_revF]
+    generate : [de1_soc_revF]
+    tools:
+      quartus:
+        family : Cyclone V
+        device : 5CSEMA5F31C6
+        board_device_index : 2
     toplevel: Toplevel
 
 scripts:
