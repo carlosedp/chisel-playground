@@ -20,4 +20,7 @@ elif sys.argv[1] == 'prog-ulx3s':
 elif sys.argv[1] == 'dfu-util-fomu':
     print("Download and install dfu-util from http://dfu-util.sourceforge.net/")
     print("dfu-util -e -d 1209:5bf0 -D {}".format(os.path.join(os.getcwd(), system_name+".bin")))
+elif sys.argv[1] == 'dfu-util':
+    print("Download and install dfu-util from http://dfu-util.sourceforge.net/")
+    print("dfu-util -e -d 1209:5bf0 -D {}".format(os.path.join(os.getcwd(), system_name+".bit")))
 print("")

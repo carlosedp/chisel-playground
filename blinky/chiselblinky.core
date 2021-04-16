@@ -145,8 +145,10 @@ targets:
   orange-crab:
     default_tool: trellis
     description: GsD orangecrab version 0.2
-    filesets: [orange-crab]
+    filesets: [orange-crab, proginfo]
     generate: [orange-crab]
+    hooks:
+      post_run: [prog-dfu-util]
     tools:
       trellis:
         nextpnr_options : [--package, CSFBGA285, --25k]
@@ -167,5 +169,7 @@ targets:
 scripts:
   prog-artya7-35t:
     cmd : [python3, proginfo.py, prog-artya7-35t]
+  prog-dfu-util:
+    cmd : [python3, proginfo.py, dfu-util]
   prog-ulx3s:
     cmd : [python3, proginfo.py, prog-ulx3s]
