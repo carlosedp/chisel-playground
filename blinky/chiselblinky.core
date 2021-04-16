@@ -27,7 +27,12 @@ filesets:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/orange-crab.lpf: { file_type: LPF }
-      
+
+  de1_soc_revF:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/de1_soc_revF.sdc: { file_type: SDC }
+      - constraints/de1_soc_revF.tcl: { file_type: tclSource }
 
 generate:
   polarfireeval:
@@ -66,13 +71,24 @@ generate:
   orange-crab:
     generator: chisel
     parameters:
-      extraargs: "-board orange-crab -invreset true"
+      extraargs: "-board orange-crab"
       chiselproject: toplevel
       copy_core: true
       output:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_orange-crab.v: { file_type: verilogSource }
+
+  de1_soc_revF:
+    generator: chisel
+    parameters:
+      extraargs: "-board de1_soc_revF"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_de1_soc_revF.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -129,15 +145,31 @@ targets:
   orange-crab:
     default_tool: trellis
     description: GsD orangecrab version 0.2
-    filesets: [orange-crab]
+    filesets: [orange-crab, proginfo]
     generate: [orange-crab]
+    hooks:
+      post_run: [prog-dfu-util]
     tools:
       trellis:
         nextpnr_options : [--package, CSFBGA285, --25k]
     toplevel: Toplevel
 
+  de1_soc_revF:
+    default_tool : quartus
+    description: Altera Cyclone V DE1_SoC board, revision F
+    filesets : [de1_soc_revF]
+    generate : [de1_soc_revF]
+    tools:
+      quartus:
+        family : Cyclone V
+        device : 5CSEMA5F31C6
+        board_device_index : 2
+    toplevel: Toplevel
+
 scripts:
   prog-artya7-35t:
     cmd : [python3, proginfo.py, prog-artya7-35t]
+  prog-dfu-util:
+    cmd : [python3, proginfo.py, dfu-util]
   prog-ulx3s:
     cmd : [python3, proginfo.py, prog-ulx3s]
