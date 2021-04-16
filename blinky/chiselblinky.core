@@ -71,7 +71,7 @@ generate:
   orange-crab:
     generator: chisel
     parameters:
-      extraargs: "-board orange-crab -invreset true"
+      extraargs: "-board orange-crab"
       chiselproject: toplevel
       copy_core: true
       output:
@@ -82,7 +82,7 @@ generate:
   de1_soc_revF:
     generator: chisel
     parameters:
-      extraargs: "-board de1_soc_revF -invreset true"
+      extraargs: "-board de1_soc_revF"
       chiselproject: toplevel
       copy_core: true
       output:
