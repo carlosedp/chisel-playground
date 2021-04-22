@@ -23,6 +23,13 @@ filesets:
       - openocd/digilent-hs1.cfg: { file_type: user }
       - openocd/xilinx-xc7.cfg: { file_type: user }
 
+  nexys4ddr:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/nexys4ddr.xdc: { file_type: xdc }
+      - openocd/digilent-hs1.cfg: { file_type: user }
+      - openocd/xilinx-xc7.cfg: { file_type: user }
+
   orange-crab:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
@@ -67,6 +74,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_artya7-35t.v: { file_type: verilogSource }
+
+  nexys4ddr:
+    generator: chisel
+    parameters:
+      extraargs: "-board nexys4ddr -invreset false"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_nexys4ddr.v: { file_type: verilogSource }
 
   orange-crab:
     generator: chisel
@@ -125,6 +143,16 @@ targets:
     tools:
       vivado:
         part : xc7a35ticsg324-1L
+    toplevel : Toplevel
+
+  nexys4ddr:
+    default_tool : vivado
+    description: Digilent Nexys 4 DDR (and Nexys A7) board
+    filesets : [nexys4ddr]
+    generate: [nexys4ddr]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
     toplevel : Toplevel
 
   artya7-35t-oss:
