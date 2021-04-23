@@ -11,7 +11,7 @@ filesets:
     files:
       - constraints/polarfire_evaluation.pdc: { file_type: PDC }
 
-  ulx3s:
+  ulx3s-85:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
@@ -108,7 +108,7 @@ targets:
   ulx3s_85:
     default_tool: trellis
     description: ULX3S 85k version
-    filesets: [ulx3s, proginfo]
+    filesets: [ulx3s-85, proginfo]
     generate: [ulx3s]
     hooks:
       post_run: [prog-ulx3s-85f]

@@ -13,7 +13,7 @@ if sys.argv[1] == 'prog-artya7-35t':
     boardConfig = os.path.join(os.getcwd(), "../src/"+system_name, "openocd/xilinx-xc7.cfg")
     bitFile = os.path.join(os.getcwd(), "Toplevel.bit")
     print("> openocd -f {} -f {} -c \"transport select jtag;init; pld load 0 {}; exit\"".format(interfaceConfig, boardConfig, bitFile))
-elif sys.argv[1] == 'prog-ulx3s':
+elif sys.argv[1] == 'prog-ulx3s-85f':
     print("> ujprog {}".format(os.path.join(os.getcwd(), system_name+".bit")))
     print("or using openocd with:")
     interfaceConfig = os.path.join(os.getcwd(), "../src/"+system_name, "openocd/ft231x.cfg")
