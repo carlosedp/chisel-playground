@@ -36,6 +36,12 @@ filesets:
       - constraints/de1_soc_revF.sdc: { file_type: SDC }
       - constraints/de1_soc_revF.tcl: { file_type: tclSource }
 
+  storey_peak_stratixV:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/storey_peak_stratixV.sdc: { file_type: SDC }
+      - constraints/storey_peak_stratixV.tcl: { file_type: tclSource }
+
 generate:
   polarfireeval:
     generator: chisel
@@ -91,6 +97,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_de1_soc_revF.v: { file_type: verilogSource }
+
+  storey_peak_stratixV:
+    generator: chisel
+    parameters:
+      extraargs: "-board storey_peak_stratixV"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_storey_peak_stratixV.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -166,6 +183,17 @@ targets:
         family : Cyclone V
         device : 5CSEMA5F31C6
         board_device_index : 2
+    toplevel: Toplevel
+
+  storey_peak_stratixV:
+    default_tool : quartus
+    description: Microsoft Storey Peak (Catapult) Stratix V FPGA Accelerator
+    filesets : [storey_peak_stratixV]
+    generate : [storey_peak_stratixV]
+    tools:
+      quartus:
+        family : Stratix V
+        device : 5SGSMD5K1F40C2
     toplevel: Toplevel
 
 scripts:
