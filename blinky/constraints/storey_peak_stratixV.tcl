@@ -1,3 +1,6 @@
+# Global
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_WEAK_PULLUP "As output driving ground"
+
 # Clock
 set_location_assignment PIN_M23 -to clock
 set_instance_assignment -name IO_STANDARD "SSTL-135" -to clock
