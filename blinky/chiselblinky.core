@@ -4,7 +4,7 @@ name: carlosedp:demo:chiselblinky:0
 
 filesets:
   proginfo:
-    files: [scripts/proginfo.py : {file_type : user, copyto : proginfo.py}]
+    files: [proginfo/proginfo.py : {file_type : user, copyto : proginfo.py}]
 
   polarfireeval:
     depend: ["fusesoc:utils:generators:0.1.6"]
@@ -17,6 +17,7 @@ filesets:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
       - openocd/ft231x.cfg: { file_type: user }
       - openocd/LFE5U-85F.cfg: { file_type: user }
+      - proginfo/ulx3s.txt: { file_type: user }
 
   artya7-35t:
     depend: ["fusesoc:utils:generators:0.1.6"]
@@ -24,6 +25,7 @@ filesets:
       - constraints/arty_a7.xdc: { file_type: xdc }
       - openocd/digilent-hs1.cfg: { file_type: user }
       - openocd/xilinx-xc7.cfg: { file_type: user }
+      - proginfo/artix7.txt: { file_type: user }
 
   nexys4ddr:
     depend: ["fusesoc:utils:generators:0.1.6"]
@@ -36,6 +38,7 @@ filesets:
     depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/orange-crab.lpf: { file_type: LPF }
+      - proginfo/dfu-util.txt: { file_type: user }
 
   de1_soc_revF:
     depend: ["fusesoc:utils:generators:0.1.6"]
@@ -146,7 +149,7 @@ targets:
     filesets: [ulx3s-85, proginfo]
     generate: [ulx3s]
     hooks:
-      post_run: [prog-ulx3s-85f]
+      post_run: [ulx3s-85f]
     tools:
       diamond:
         part: LFE5U-85F-6BG381C
@@ -180,7 +183,7 @@ targets:
     filesets : [artya7-35t, proginfo]
     generate: [artya7-35t]
     hooks:
-      post_run: [prog-artya7-35t]
+      post_run: [artya7-35t]
     tools:
       symbiflow:
         part : xc7a35t
@@ -195,7 +198,7 @@ targets:
     filesets: [orange-crab, proginfo]
     generate: [orange-crab]
     hooks:
-      post_run: [prog-dfu-util]
+      post_run: [dfu-util]
     tools:
       trellis:
         nextpnr_options : [--package, CSFBGA285, --25k]
@@ -225,9 +228,9 @@ targets:
     toplevel: Toplevel
 
 scripts:
-  prog-artya7-35t:
-    cmd : [python3, proginfo.py, prog-artya7-35t]
-  prog-dfu-util:
+  artya7-35t:
+    cmd : [python3, proginfo.py, artya7-35t]
+  dfu-util:
     cmd : [python3, proginfo.py, dfu-util]
-  prog-ulx3s-85f:
-    cmd : [python3, proginfo.py, prog-ulx3s-85f]
+  ulx3s-85f:
+    cmd : [python3, proginfo.py, ulx3s-85f]

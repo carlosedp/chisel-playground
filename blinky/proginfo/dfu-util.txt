@@ -1,0 +1,5 @@
+# Programming instructions for Fomu
+
+To program the board using dfu-util, use the command:
+
+dfu-util -e -d 1209:5bf0 -D $bitstream
