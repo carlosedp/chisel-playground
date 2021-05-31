@@ -5,7 +5,7 @@ lazy val blinky = (project in file("."))
     organization := "com.carlosedp",
     name := "chisel-blinky",
     version := "0.0.1",
-    scalaVersion := "2.12.13",
+    scalaVersion := "2.12.14",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     maxErrors := 3
@@ -17,7 +17,7 @@ val defaultVersions = Map(
   "chisel3"          -> "3.4.3",
   "chisel-iotesters" -> "1.5.3",
   "chiseltest"       -> "0.3.3",
-  "scalatest"        -> "3.2.7",
+  "scalatest"        -> "3.2.9",
   "organize-imports" -> "0.5.0"
 )
 // Import libraries

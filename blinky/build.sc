@@ -2,19 +2,19 @@ import mill._
 import mill.scalalib._
 import scalafmt._
 import coursier.MavenRepository
-import $ivy.`com.goyeau::mill-scalafix:0.2.1`
+import $ivy.`com.goyeau::mill-scalafix:0.2.2`
 import com.goyeau.mill.scalafix.ScalafixModule
 
 def mainClass = Some("Toplevel")
 
 val defaultVersions = Map(
-  "scala"             -> "2.12.13",
+  "scala"             -> "2.12.14",
   "chisel3"           -> "3.4.3",
   "chisel-iotesters"  -> "1.5.3",
   "chiseltest"        -> "0.3.3",
-  "scalatest"         -> "3.2.7",
+  "scalatest"         -> "3.2.9",
   "organize-imports"  -> "0.5.0",
-  "semanticdb-scalac" -> "4.4.12"
+  "semanticdb-scalac" -> "4.4.20"
 )
 val binCrossScalaVersions = Seq("2.12.10")
 
@@ -44,7 +44,7 @@ trait HasChiselTests extends CrossSbtModule {
 
 trait CodeQuality extends ScalafixModule with ScalafmtModule {
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${defaultVersions("organize-imports")}")
-  // Override semanticdb version due to unavailable 4.4.0 for Scala 2.12.13.
+  // Override semanticdb version due to unavailable 4.4.10 for Scala 2.12.14.
   override def scalacPluginIvyDeps =
     Agg(ivy"org.scalameta:::semanticdb-scalac:${defaultVersions("semanticdb-scalac")}")
 }
