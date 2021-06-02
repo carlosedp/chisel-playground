@@ -8,24 +8,25 @@ class Toplevel(board: String, invReset: Boolean = true) extends Module {
     val led1 = Output(Bool())
     val led2 = Output(Bool())
   })
+  // Define if reset should be inverted based on board switch
+  val customReset = Wire(Bool())
+  if (invReset) {
+    customReset := ~reset.asBool()
+  } else {
+    customReset := reset
+  }
 
   // Instantiate PLL module based on board
   val pll: PLL0 = Module(new PLL0(board))
-
-  // Instantiate the Blink module using 25Mhz from PLL output
-  val bl: Blinky = Module(new Blinky(25000000))
-
-  // Connect IO between Toplevel and Blinky
-  bl.io <> io
-
-  // Connect Clock and Reset(inverted)
   pll.io.clki := clock
-  bl.clock := pll.io.clko
-  // Define if reset should be inverted based on board switch
-  if (invReset) {
-    bl.reset := ~reset.asBool()
-  } else {
-    bl.reset := reset
+
+  // Wrap all module instantiation using our PLL clock and custom Reset
+  withClockAndReset(pll.io.clko, customReset) {
+    // Instantiate the Blink module using 25Mhz from PLL output
+    val bl = Module(new Blinky(25000000))
+
+    // Connect IO between Toplevel and Blinky
+    bl.io <> io
   }
 }
 

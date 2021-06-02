@@ -24,6 +24,9 @@ class Blinky(freq: Int) extends Module {
   // 1 beathe cycle every second
   io.led2 := breathe(freq, 1000)
 
+  // To set a specific PWM value instead (Eg. 10% duty cycle)
+  // io.led2 := pwmAbs(10.U)
+
   //-------------- Utility Functions --------------
   /**
    * pwmAbs creates a PWM output from a 0 to 100 Duty Cycle
@@ -43,8 +46,6 @@ class Blinky(freq: Int) extends Module {
     }
     out
   }
-  // To set a specific value (10% duty cycle)
-  // io.led2 := pwmAbs(10.U)
 
   /**
    * breathe creates a gradual off-on-off cycle with pwmAbs function
