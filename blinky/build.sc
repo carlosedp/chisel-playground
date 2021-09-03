@@ -8,7 +8,7 @@ import com.goyeau.mill.scalafix.ScalafixModule
 def mainClass = Some("Toplevel")
 
 val defaultVersions = Map(
-  "scala"             -> "2.12.14",
+  "scala"             -> "2.12.13",
   "chisel3"           -> "3.4.3",
   "chisel-iotesters"  -> "1.5.3",
   "chiseltest"        -> "0.3.3",
@@ -19,14 +19,21 @@ val defaultVersions = Map(
 val binCrossScalaVersions = Seq("2.12.10")
 
 trait HasChisel3 extends ScalaModule {
-  override def ivyDeps = Agg(
+  override def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"edu.berkeley.cs::chisel3:${defaultVersions("chisel3")}"
+  )
+  override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ Agg(
+    ivy"edu.berkeley.cs:::chisel3-plugin:${defaultVersions("chisel3")}"
+  )
+  override def scalacOptions = super.scalacOptions() ++ Seq(
+    // Enables autoclonetype2 in 3.4.x (remove in chisel3 3.5)
+    "-P:chiselplugin:useBundlePlugin"
   )
 }
 
 trait HasChiselTests extends CrossSbtModule {
   object test extends Tests {
-    override def ivyDeps = Agg(
+    override def ivyDeps = super.ivyDeps() ++ Agg(
       ivy"org.scalatest::scalatest:${defaultVersions("scalatest")}",
       ivy"edu.berkeley.cs::chisel-iotesters:${defaultVersions("chisel-iotesters")}",
       ivy"edu.berkeley.cs::chiseltest:${defaultVersions("chiseltest")}"
@@ -46,7 +53,7 @@ trait CodeQuality extends ScalafixModule with ScalafmtModule {
   def scalafixIvyDeps = Agg(ivy"com.github.liancheng::organize-imports:${defaultVersions("organize-imports")}")
   // Override semanticdb version due to unavailable 4.4.10 for Scala 2.12.14.
   override def scalacPluginIvyDeps =
-    Agg(ivy"org.scalameta:::semanticdb-scalac:${defaultVersions("semanticdb-scalac")}")
+    super.scalacPluginIvyDeps() ++ Agg(ivy"org.scalameta:::semanticdb-scalac:${defaultVersions("semanticdb-scalac")}")
 }
 
 trait Aliases extends Module {

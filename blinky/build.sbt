@@ -5,7 +5,7 @@ lazy val blinky = (project in file("."))
     organization := "com.carlosedp",
     name := "chisel-blinky",
     version := "0.0.1",
-    scalaVersion := "2.12.14",
+    scalaVersion := "2.12.13",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     maxErrors := 3
@@ -39,6 +39,8 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("releases")
 )
 
+addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % defaultVersions("chisel3") cross CrossVersion.full)
+
 scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",
@@ -48,5 +50,6 @@ scalacOptions ++= Seq(
   "-Ywarn-value-discard",
   "-Ywarn-dead-code",
   "-Ywarn-unused",
-  "-Xsource:2.11"
+  "-Xsource:2.11",
+  "-P:chiselplugin:useBundlePlugin"
 )

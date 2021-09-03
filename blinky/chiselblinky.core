@@ -78,7 +78,7 @@ generate:
   artya7-35t:
     generator: chisel
     parameters:
-      extraargs: "-board artya7-35t -invreset false"
+      extraargs: "-board artya7-35t"
       chiselproject: toplevel
       copy_core: true
       output:
