@@ -1,0 +1,39 @@
+// QuickFeather uses the QFN package, others mostly use the BGA package.
+// can do (QFN)   :     set_io      SIGNAL_NAME     QFN_PIN_NUM
+// can do (BGA)   :     set_io      SIGNAL_NAME     BGA_BALL_NUM
+// can do (WLCSP) :     set_io      SIGNAL_NAME     WLCSP_PIN_NUM
+// can do (ALL)   :     set_io      SIGNAL_NAME     IO_PAD_NUM
+//
+// RED LED, for example is on IO_22, which is QFN_PIN_NUM 34 (BGA BALL G7)
+// so,
+// (QFN)    :   set_io   red_led     34
+// (BGA)    :   set_io   red_led     G7
+// (ALL)    :   set_io   red_led     IO_22
+// are equivalent
+// NOTE that the WLSCP version of EOSS3 does not have IO_22 brought out at all!
+// So, this signal cannot be used with the WLCSP package.
+//
+// by using the IO_PAD_NUM -> we don't need to change PCF across chip package variants.
+// However, we need to be careful that the relevant IO_PAD is actually brought out in the variant we are using.
+// WLCSP package of EOSS3 has a much lower number of IOs compared to the BGA/QFN package.
+//
+// signals defined here, can be directly accessed in the Verilog code.
+
+// Qomu Pinout
+//
+// D2 - Red LED
+// A6 - Green LED
+// F4 - Blue LED
+// B5 - Touch 1
+// D1 - Touch 2
+// A7 - Touch 3
+// E3 - Touch 4
+// E7 - UART TX
+// F7 - UART RX
+// D5 - SPI SCLK
+// F5 - SPI MISO
+// E6 - SPI MOSI
+
+set_io      io_led0      D2
+set_io      io_led1      A6
+set_io      io_led2      F4

@@ -52,6 +52,11 @@ filesets:
       - constraints/storey_peak_stratixV.sdc: { file_type: SDC }
       - constraints/storey_peak_stratixV.tcl: { file_type: tclSource }
 
+  qomu:
+    depend: ["fusesoc:utils:generators:0.1.6"]
+    files:
+      - constraints/qomu.pcf: { file_type: PCF }
+
 generate:
   polarfireeval:
     generator: chisel
@@ -129,6 +134,17 @@ generate:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
           - generated/pll_storey_peak_stratixV.v: { file_type: verilogSource }
+
+  qomu:
+    generator: chisel
+    parameters:
+      extraargs: "-board qomu -invreset false"
+      chiselproject: toplevel
+      copy_core: true
+      output:
+        files:
+          - generated/Toplevel.v: { file_type: verilogSource }
+          - generated/pll_qomu.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
@@ -226,6 +242,19 @@ targets:
         family : Stratix V
         device : 5SGSMD5K1F40C2
     toplevel: Toplevel
+
+  qomu:
+    default_tool : symbiflow
+    description: Qomu, a Quicklogic EOS S3 board using Symbiflow OSS Toolchain
+    filesets : [qomu, proginfo]
+    generate: [qomu]
+    tools:
+      symbiflow:
+        part : ql-eos-s3
+        package: WR42
+        vendor: quicklogic
+        pnr: vtr
+    toplevel : Toplevel
 
 scripts:
   artya7-35t:
