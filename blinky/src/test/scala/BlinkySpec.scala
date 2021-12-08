@@ -45,8 +45,7 @@ class WaveformCounterSpec extends AnyFlatSpec with Matchers {
   }
 }
 
-class WaveformCounterTester(dut: Blinky, cycles: Int)
-    extends PeekPokeTester(dut) {
+class WaveformCounterTester(dut: Blinky, cycles: Int) extends PeekPokeTester(dut) {
   for (_ <- 0 until cycles) {
     step(1)
   }

@@ -4,7 +4,7 @@ import chisel3.util._
 /**
  * The blinking LED component.
  */
-class Blinky(freq: Int) extends Module {
+class Blinky(freq: Int, startOn: Boolean = false) extends Module {
   val io = IO(new Bundle {
     val led0 = Output(Bool())
     val led1 = Output(Bool())
@@ -12,7 +12,7 @@ class Blinky(freq: Int) extends Module {
   })
 
   // Alternate blink leds every second
-  val led              = RegInit(0.U(1.W))
+  val led              = RegInit(startOn.B)
   val (_, counterWrap) = Counter(true.B, freq / 2)
   when(counterWrap) {
     led := ~led

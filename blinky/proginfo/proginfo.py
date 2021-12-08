@@ -2,37 +2,30 @@
 import os
 import sys
 import glob
+import yaml
 from string import Template
 
 def main():
     print("Build completed")
-    # If possible, reuse the templates just passing the correct files
-    if sys.argv[1] == 'artya7-35t':
-        d = {
-            'interfaceConfig': findFile("digilent-hs1.cfg"),
-            'boardConfig': findFile("xilinx-xc7.cfg"),
-            'bitstream': findFile("Toplevel.bit")
-        }
-        render(d, findFile('artix7.txt'))
-    elif sys.argv[1] == 'ulx3s-85f':
-        d = {
-            'interfaceConfig': findFile("ft231x.cfg"),
-            'boardConfig': findFile("LFE5U-85F.cfg"),
-            'bitstream': findFile("carlosedp_demo_chiselblinky_0.bit"),
-            'bitstreamSVF': findFile("carlosedp_demo_chiselblinky_0.svf")
-        }
-        render(d, findFile('ulx3s.txt'))
-    elif sys.argv[1] == 'dfu-util':
-        d = {
-            'bitstream': findFile("carlosedp_demo_chiselblinky_0.bit")
-        }
-        render(d, findFile('dfu-util.txt'))
+    with open(findFile('boardconfig.yaml')) as file:
+        fullfile = yaml.full_load(file)
+        boards = fullfile['boards']
+        boardFiles = {}
+        if sys.argv[1] in boards:
+            for param in boards[sys.argv[1]]:
+                boardFiles[param] = findFile(boards[sys.argv[1]][param])
+            render(boardFiles, findFile(boards[sys.argv[1]]['templateFile']))
+        else:
+            print("ERROR: Board " + sys.argv[1] + " not found in boardconfig.yaml")
+            exit(1)
     print("")
 
 # Utility Functions
 
-def findFile(f):
+def findFile(f, filter=""):
     r = glob.glob("../**/" + f, recursive=True)
+    if filter != "":
+        r = [s for s in r if filter in s]
     if not r:
         print("ERROR: Could not find file " + f)
         exit(1)

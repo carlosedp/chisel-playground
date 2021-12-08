@@ -1,156 +1,127 @@
 CAPI=2:
 
 name: carlosedp:demo:chiselblinky:0
+description: A blinky demo written in Chisel HDL
 
 filesets:
   proginfo:
-    files: [proginfo/proginfo.py : {file_type : user, copyto : proginfo.py}]
+    files:
+      - proginfo/proginfo.py : {file_type : user, copyto : proginfo.py}
+      - proginfo/boardconfig.yaml : {file_type : user, copyto : boardconfig.yaml}
+
+  base:
+    depend: ["fusesoc:utils:generators"]
 
   polarfireeval:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/polarfire_evaluation.pdc: { file_type: PDC }
 
   ulx3s-85:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
       - openocd/ft231x.cfg: { file_type: user }
       - openocd/LFE5U-85F.cfg: { file_type: user }
-      - proginfo/ulx3s.txt: { file_type: user }
+      - proginfo/ulx3s-template.txt: { file_type: user }
 
   artya7-35t:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/arty_a7.xdc: { file_type: xdc }
       - openocd/digilent-hs1.cfg: { file_type: user }
       - openocd/xilinx-xc7.cfg: { file_type: user }
-      - proginfo/artix7.txt: { file_type: user }
+      - proginfo/artix7-template.txt: { file_type: user }
 
   nexys4ddr:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/nexys4ddr.xdc: { file_type: xdc }
       - openocd/digilent-hs1.cfg: { file_type: user }
       - openocd/xilinx-xc7.cfg: { file_type: user }
 
   orange-crab:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/orange-crab.lpf: { file_type: LPF }
       - proginfo/dfu-util.txt: { file_type: user }
 
   de1_soc_revF:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/de1_soc_revF.sdc: { file_type: SDC }
       - constraints/de1_soc_revF.tcl: { file_type: tclSource }
 
   storey_peak_stratixV:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/storey_peak_stratixV.sdc: { file_type: SDC }
       - constraints/storey_peak_stratixV.tcl: { file_type: tclSource }
 
   qomu:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/qomu.pcf: { file_type: PCF }
 
 generate:
-  polarfireeval:
+
+  default-chisel:
     generator: chisel
-    parameters:
-      extraargs: "-board polarfireeval"
+    parameters: &baseparam
+      extraargs: "-board bypass"
       chiselproject: toplevel
       copy_core: true
       output:
         files:
           - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_polarfireeval.v: { file_type: verilogSource }
+          - generated/PLL.v: { file_type: verilogSource }
+
+
+  polarfireeval:
+    generator: chisel
+    parameters:
+      <<: *baseparam
+      extraargs: "-board polarfireeval"
 
   ulx3s:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board ulx3s"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_ulx3s.v: { file_type: verilogSource }
 
   artya7-35t:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board artya7-35t"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_artya7-35t.v: { file_type: verilogSource }
 
   nexys4ddr:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board nexys4ddr -invreset false"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_nexys4ddr.v: { file_type: verilogSource }
 
   orange-crab:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board orange-crab"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_orange-crab.v: { file_type: verilogSource }
 
   de1_soc_revF:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board de1_soc_revF"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_de1_soc_revF.v: { file_type: verilogSource }
 
   storey_peak_stratixV:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board storey_peak_stratixV"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_storey_peak_stratixV.v: { file_type: verilogSource }
 
   qomu:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board qomu -invreset false"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_qomu.v: { file_type: verilogSource }
 
 targets:
   polarfireeval_es:
     default_tool: libero
     description: Microsemi Polarfire Evaluation Kit (ES)
-    filesets: [polarfireeval]
+    filesets: [base, polarfireeval]
     generate: [polarfireeval]
     tools:
       libero:
@@ -159,10 +130,10 @@ targets:
         package: FCG1152
     toplevel: Toplevel
 
-  ulx3s_85:
+  ulx3s-85:
     default_tool: trellis
     description: ULX3S 85k version
-    filesets: [ulx3s-85, proginfo]
+    filesets: [base, ulx3s-85, proginfo]
     generate: [ulx3s]
     hooks:
       post_run: [ulx3s-85f]
@@ -171,12 +142,13 @@ targets:
         part: LFE5U-85F-6BG381C
       trellis:
         nextpnr_options: [--package, CABGA381, --85k]
+        yosys_synth_options: [-abc9, -nowidelut]
     toplevel: Toplevel
 
   artya7-35t:
     default_tool : vivado
     description: Digilent ArtyA7-35T Board
-    filesets : [artya7-35t]
+    filesets : [base, artya7-35t]
     generate: [artya7-35t]
     tools:
       vivado:
@@ -186,7 +158,7 @@ targets:
   nexys4ddr:
     default_tool : vivado
     description: Digilent Nexys 4 DDR (and Nexys A7) board
-    filesets : [nexys4ddr]
+    filesets : [base, nexys4ddr]
     generate: [nexys4ddr]
     tools:
       vivado:
@@ -196,7 +168,7 @@ targets:
   artya7-35t-oss:
     default_tool : symbiflow
     description: Digilent ArtyA7-35T Board using Symbiflow OSS Toolchain
-    filesets : [artya7-35t, proginfo]
+    filesets : [base, artya7-35t, proginfo]
     generate: [artya7-35t]
     hooks:
       post_run: [artya7-35t]
@@ -211,7 +183,7 @@ targets:
   orange-crab:
     default_tool: trellis
     description: GsD orangecrab version 0.2
-    filesets: [orange-crab, proginfo]
+    filesets: [base, orange-crab, proginfo]
     generate: [orange-crab]
     hooks:
       post_run: [dfu-util]
@@ -223,7 +195,7 @@ targets:
   de1_soc_revF:
     default_tool : quartus
     description: Altera Cyclone V DE1_SoC board, revision F
-    filesets : [de1_soc_revF]
+    filesets : [base, de1_soc_revF]
     generate : [de1_soc_revF]
     tools:
       quartus:
@@ -235,7 +207,7 @@ targets:
   storey_peak_stratixV:
     default_tool : quartus
     description: Microsoft Storey Peak (Catapult) Stratix V FPGA Accelerator
-    filesets : [storey_peak_stratixV]
+    filesets : [base, storey_peak_stratixV]
     generate : [storey_peak_stratixV]
     tools:
       quartus:
@@ -246,7 +218,7 @@ targets:
   qomu:
     default_tool : symbiflow
     description: Qomu, a Quicklogic EOS S3 board using Symbiflow OSS Toolchain
-    filesets : [qomu, proginfo]
+    filesets : [base, qomu, proginfo]
     generate: [qomu]
     tools:
       symbiflow:
@@ -254,6 +226,7 @@ targets:
         package: WR42
         vendor: quicklogic
         pnr: vtr
+        toolchain_prefix: ql-
     toplevel : Toplevel
 
 scripts:

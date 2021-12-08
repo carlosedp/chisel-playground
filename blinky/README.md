@@ -44,11 +44,11 @@ fusesoc library add fusesoc-cores https://github.com/fusesoc/fusesoc-cores
 git clone https://github.com/carlosedp/chisel-playground
 fusesoc library add chiselblinky $(pwd)/chisel-playground/blinky
 
-fusesoc run --target=ulx3s_85 carlosedp:demo:chiselblinky:0
+fusesoc run --target=ulx3s-85 carlosedp:demo:chiselblinky:0
 ...
 ...
-# Output bitstream will be on build/carlosedp_demo_chiselblinky_0/ulx3s_85-trellis
-❯ ll build/carlosedp_demo_chiselblinky_0/ulx3s_85-trellis
+# Output bitstream will be on build/carlosedp_demo_chiselblinky_0/ulx3s-85-trellis
+❯ ll build/carlosedp_demo_chiselblinky_0/ulx3s-85-trellis
 total 2.7M
 -rw-r--r-- 1 cdepaula staff  774 Apr  7 18:53 carlosedp_demo_chiselblinky_0.eda.yml
 -rw-r--r-- 1 cdepaula staff  545 Apr  7 18:53 carlosedp_demo_chiselblinky_0.tcl
@@ -82,7 +82,7 @@ wget https://gist.github.com/carlosedp/c0e29d55e48309a48961f2e3939acfe9/raw/bfeb
 chmod +x runme.py
 
 # Run fusesoc with the wrapper as an environment var
-EDALIZE_LAUNCHER=$(realpath ./runme.py) fusesoc run --target=ulx3s_85 carlosedp:demo:chiselblinky:0
+EDALIZE_LAUNCHER=$(realpath ./runme.py) fusesoc run --target=ulx3s-85 carlosedp:demo:chiselblinky:0
 
 #The output files will be on the local ./build dir like before
 ```
@@ -99,54 +99,66 @@ Three sections are required:
 
 #### Fileset
 
-Filesets lists the dependency from the chisel-generator, that outputs Verilog from Chisel (Scala) code. It also contains the static files used for each board like constraints that must be copied to the output project dir and used by EDA.
+Filesets lists the dependency files specific for each board that must be copied to the output project dir and used by EDA.
 
 ```yaml
   polarfireeval:
-    depend: ["fusesoc:utils:generators:0.1.6"]
     files:
       - constraints/polarfire_evaluation.pdc: { file_type: PDC }
+# or for boards that contain programming files
+  artya7-35t:
+    files:
+      - constraints/arty_a7.xdc: { file_type: xdc }
+      - openocd/digilent-hs1.cfg: { file_type: user }
+      - openocd/xilinx-xc7.cfg: { file_type: user }
+      - proginfo/artix7-template.txt: { file_type: user }
 ```
 
 #### Generate
 
-The generator section contains the Chisel generator parameters. It has the arguments to be passed to Chisel (the board in this example), the project name and the output files created by the generator to be used by the EDA.
+The generator section contains the Chisel generator parameters. It has the arguments to be passed to Chisel (the board in this example), the project name and the output files created by the generator to be used by the EDA. Since they all inherit from the Chisel standard generator, it's a matter of using the `*baseparam` tag as:
 
 ```yaml
   polarfireeval:
     generator: chisel
     parameters:
+      <<: *baseparam
       extraargs: "-board polarfireeval"
-      chiselproject: toplevel
-      copy_core: true
-      output:
-        files:
-          - generated/Toplevel.v: { file_type: verilogSource }
-          - generated/pll_polarfireeval.v: { file_type: verilogSource }
+
+# or if board doesn't use an inverse-reset (pulled down) switch
+  qomu:
+    generator: chisel
+    parameters:
+      <<: *baseparam
+      extraargs: "-board qomu -invreset false"
 ```
 
 #### Target
 
-Finally the target section has the board information to be passed to the EDA tools. Parameters like the package/die or extra parameters to synthesis or PnR. This is highly dependent of the EDA backend. It's name is the one passed on the `--target=` param on FuseSoc. It also references the fileset and generate configs.
+Finally the target section has the board information to be passed to the EDA tools. Parameters like the package/die or extra parameters to synthesis or PnR. This is highly dependent of the EDA backend. It's name is the one passed on the `--target=` param on FuseSoc. It also references the fileset and generate configs. Must contain the `base` fileset.
 
 ```yaml
   polarfireeval_es:
     default_tool: libero
     description: Microsemi Polarfire Evaluation Kit (ES)
-    filesets: [polarfireeval]
+    filesets: [base, polarfireeval]
     generate: [polarfireeval]
     tools:
       libero:
         family: PolarFire
         die: MPF300TS_ES
         package: FCG1152
+    toplevel: Toplevel
 ```
 
 To add support to additional boards, create these sections (or reuse similar ones). More details can be found on [Edalize docs](https://github.com/olofk/edalize/) or using [Corescore](https://github.com/olofk/corescore) and [Blinky](https://github.com/fusesoc/blinky) as examples.
 
 ### Makefile build and generation
 
-The Makefiles support synthesis using the Open Source toolchain based on yosys/nextpnr.
+The Makefiles support synthesis on some FPGAs using the Open Source toolchain based on yosys/nextpnr. This is deprecated might be removed in the future.
+
+<details>
+  <summary>Click to expand</summary>
 
 At the moment the tools support Lattice ECP5 FPGAs. The build process can use Docker images, so no software other than Docker needs to be installed. If you prefer Podman you can use that too, just adjust it in `Makefile`, `DOCKER=podman`. If the variable is undefined, build proceeds with locally installed tools.
 
@@ -180,3 +192,5 @@ make BOARD=ulx3s USBDEVICE=/dev/tty.usbserial-120001 prog
 Programming using OpenOCD on Docker does not work on Docker Desktop for Mac/Windows since the container is run in a Linux VM and can not see the physical devices connected to the Host. In this case you need OpenOCD installed locally.
 
 For the ULX3S board, the current OpenOCD does not support ft232 protocol so to program it, download [ujprog](https://github.com/emard/ulx3s-bin/tree/master/usb-jtag) for your platform and program using `./ujprog chiselwatt.bit` or to persist in the flash, `./ujprog -j FLASH chiselwatt.bit`.
+
+</details>

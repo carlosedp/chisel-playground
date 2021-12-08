@@ -8,17 +8,12 @@ class Toplevel(board: String, invReset: Boolean = true) extends Module {
     val led1 = Output(Bool())
     val led2 = Output(Bool())
   })
-  // Define if reset should be inverted based on board switch
-  val customReset = Wire(Bool())
-  if (invReset) {
-    customReset := ~reset.asBool()
-  } else {
-    customReset := reset
-  }
 
   // Instantiate PLL module based on board
-  val pll: PLL0 = Module(new PLL0(board))
+  val pll = Module(new PLL0(board))
   pll.io.clki := clock
+  // Define if reset should be inverted based on board switch
+  val customReset = if (invReset) ~reset.asBool() else reset
 
   // Wrap all module instantiation using our PLL clock and custom Reset
   withClockAndReset(pll.io.clko, customReset) {
