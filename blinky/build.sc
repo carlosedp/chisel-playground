@@ -3,32 +3,28 @@ import mill.scalalib._
 import scalafmt._
 import coursier.MavenRepository
 import $ivy.`com.goyeau::mill-scalafix:0.2.2`
-import com.goyeau.mill.scalafix.ScalafixModule
+import com.goyeau.mill.scalafix._
 
 def mainClass = Some("Toplevel")
 
 val defaultVersions = Map(
-  "scala"             -> "2.12.13",
-  "chisel3"           -> "3.4.3",
+  "scala"             -> "2.13.8",
+  "chisel3"           -> "3.5.1",
   "chisel-iotesters"  -> "1.5.3",
-  "chiseltest"        -> "0.3.3",
-  "scalatest"         -> "3.2.9",
-  "organize-imports"  -> "0.5.0",
-  "semanticdb-scalac" -> "4.4.20"
+  "chiseltest"        -> "0.5.1",
+  "scalatest"         -> "3.2.11",
+  "organize-imports"  -> "0.6.0",
+  "scalautils"        -> "0.9.0",
+  "semanticdb-scalac" -> "4.4.35"
 )
-val binCrossScalaVersions = Seq("2.12.10")
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"edu.berkeley.cs::chisel3:${defaultVersions("chisel3")}",
-    ivy"com.carlosedp::scalautils:0.4.0"
+    ivy"com.carlosedp::scalautils:${defaultVersions("scalautils")}"
   )
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ Agg(
     ivy"edu.berkeley.cs:::chisel3-plugin:${defaultVersions("chisel3")}"
-  )
-  override def scalacOptions = super.scalacOptions() ++ Seq(
-    // Enables autoclonetype2 in 3.4.x (remove in chisel3 3.5)
-    "-P:chiselplugin:useBundlePlugin"
   )
 }
 
@@ -67,13 +63,14 @@ trait Aliases extends Module {
 trait ScalacOptions extends ScalaModule {
   override def scalacOptions = T {
     super.scalacOptions() ++ Seq(
+      "-unchecked",
+      "-deprecation",
       "-language:reflectiveCalls",
       "-feature",
+      "-Xcheckinit",
       "-Xfatal-warnings",
-      "-Ywarn-value-discard",
       "-Ywarn-dead-code",
-      "-Ywarn-unused",
-      "-Xsource:2.11"
+      "-Ywarn-unused"
     )
   }
 }
