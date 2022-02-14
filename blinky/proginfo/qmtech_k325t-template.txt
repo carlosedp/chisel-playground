@@ -1,0 +1,5 @@
+# Programming instructions for QMTech Kintex 7 board
+
+## To program the board using OpenFPGAloader  (), use the command:
+
+openfpgaloader -c ft232 $bitstream

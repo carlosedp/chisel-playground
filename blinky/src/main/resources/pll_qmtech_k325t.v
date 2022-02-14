@@ -1,6 +1,6 @@
 `timescale 1ps/1ps
 
-// Input clock is 100Mhz
+// Input clock is 50Mhz
 // Output clock is 25Mhz
 
 module PLL0
@@ -52,7 +52,7 @@ wire clki_clk_wiz_0;
   #(.BANDWIDTH            ("OPTIMIZED"),
     .COMPENSATION         ("INTERNAL"),
     .STARTUP_WAIT         ("FALSE"),
-    .DIVCLK_DIVIDE        (4),
+    .DIVCLK_DIVIDE        (2),
     .CLKFBOUT_MULT        (33),
     .CLKFBOUT_PHASE       (0.000),
     .CLKOUT0_DIVIDE       (33),
